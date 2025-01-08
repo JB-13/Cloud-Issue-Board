@@ -24,61 +24,6 @@ window.onclick = function(event) {
   }
 }
 
-//--------------Fahrtesuche----------------------------
-
-async function fahrtenSuchen() {
-    let Start = document.getElementById('StartSuche').value;
-    let Ziel = document.getElementById('ZielSuche').value;
-    let Datum = document.getElementById('DatumSuche').value;
-
-    let SuchDaten = {
-            "start": Start,
-            "ziel": Ziel,
-            "datum": Datum
-    };
-    console.log("SuchDaten: ", SuchDaten);
-        try {
-                // API-Anfrage an den Server
-                const antwort = await fetch('/fahrzeug-server/public/fahrten', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(SuchDaten)
-                });
-
-                const ergebnis = await antwort.json();
-
-                if (!antwort.ok) {
-                    throw new Error("Fehler: " + antwort.status + " " + ergebnis.message);
-                }
-
-                console.log("Ergebnis: ", ergebnis);
-
-                // Suchergebnisse rendern
-                        const suchBody = document.getElementById('suchErgebnisseBody');
-                        suchBody.innerHTML = ergebnis.map(fahrt => {
-                            const fahrtDatum = new Date(fahrt.datum);
-
-                            return `
-                                <tr>
-                                    <td>${Start}</td>
-                                    <td>${Ziel}</td>
-                                    <td>${fahrtDatum.toLocaleString('de-DE')}</td>
-                                    <td><button class="fahrtBuchenKnopf" title="Buchen">Buchen</button></td>
-                                </tr>
-                            `;
-                        }).join('');
-
-        } catch (fehler) {
-           console.error('Fehler:', fehler);
-        }
-}
-
-//--------------Fahrtensuche ENDE----------------------------
-
 window.onload = function () {
 
     // Event-Listener für den Anmelde-Button
@@ -102,8 +47,14 @@ window.onload = function () {
 
 // Globale Variablen für die Benutzersitzung
 let aktiveBenutzerID = null;
-let aktiverBenutzerEmail = null;
+let aktiverBenutzerbenutzername = null;
 
+
+
+
+
+
+// ***************************************************API-Anfang****************************************************************
 // Funktion zum Anmelden eines Benutzers
 async function benutzerAnmelden() {
     fehlerMeldungLeeren();
@@ -115,11 +66,11 @@ async function benutzerAnmelden() {
     anmeldeButton.disabled = true;
 
     // Benutzereingaben auslesen
-    let email = document.getElementById('eingabeEmail').value;
+    let benutzername = document.getElementById('eingabebenutzername').value;
     let passwort = document.getElementById('eingabePasswort').value;
 
     // Eingabevalidierung. Bei fehlenden Eingaben wird eine Fehlermeldung angezeigt.
-    if (!email || !passwort) {
+    if (!benutzername || !passwort) {
         fehlerAnzeigen("Bitte füllen Sie alle Felder aus.", "anmeldeFehler");
         buttonZuruecksetzen();
         return;
@@ -127,7 +78,7 @@ async function benutzerAnmelden() {
 
     // Anmeldedaten zusammenstellen und in JSON-Format umwandeln
     let anmeldeDaten = {
-        "email": email,
+        "benutzername": benutzername,
         "passwort": passwort
     };
 
@@ -153,8 +104,8 @@ async function benutzerAnmelden() {
 
         // Erfolgreiche Anmeldung verarbeiten
         aktiveBenutzerID = ergebnis.id;
-        aktiverBenutzerEmail = ergebnis.email;
-        document.getElementById("anmdelungsname").textContent="Angemeldet als: "+aktiverBenutzerEmail;
+        aktiverBenutzerbenutzername = ergebnis.benutzername;
+        document.getElementById("anmdelungsname").textContent="Angemeldet als: "+aktiverBenutzerbenutzername;
         // Modal schließen
         modal.style.display = "none";
 
@@ -171,8 +122,8 @@ async function benutzerAnmelden() {
     } catch (fehler) {
         // Fehlerbehandlung
         if (fehler.message.includes("401")) {
-            fehlerAnzeigen("Email oder Passwort ist falsch.", "anmeldeFehler");
-            console.log("Fehler: ", fehler.message, "Email oder Passwort ist falsch.");
+            fehlerAnzeigen("benutzername oder Passwort ist falsch.", "anmeldeFehler");
+            console.log("Fehler: ", fehler.message, "benutzername oder Passwort ist falsch.");
         } else {
             fehlerAnzeigen(fehler.message, "anmeldeFehler");
         }
@@ -201,7 +152,7 @@ async function abmelden() {
 
         // Globale Variablen zurücksetzen
         aktiveBenutzerID = null;
-        aktiverBenutzerEmail = null;
+        aktiverBenutzerbenutzername = null;
         document.getElementById("anmdelungsname").textContent="";
         eingabefelderLeeren();
         benutzeroberflaecheAktualisieren();
@@ -232,19 +183,11 @@ async function benutzerRegistrieren() {
     registrierenButton.disabled = true;
 
     // Benutzereingaben auslesen
-    let vorname = document.getElementById('eingabeRegistrierungsVorname').value;
-    let nachname = document.getElementById('eingabeRegistrierungsNachname').value;
-    let email = document.getElementById('eingabeRegistrierungsEmail').value;
-    let strasse = document.getElementById('eingabeRegistrierungsStrasse').value;
-    let hausnummer = document.getElementById('eingabeRegistrierungsHausnummer').value;
-    let plz = document.getElementById('eingabeRegistrierungsPLZ').value;
-    let wohnort = document.getElementById('eingabeRegistrierungsWohnort').value;
-    let land = document.getElementById('eingabeRegistrierungsLand').value;
+    let benutzername = document.getElementById('eingabeRegistrierungsbenutzername').value;
     let passwort = document.getElementById('eingabeRegistrierungsPasswort').value;
 
     // Eingabevalidierung. Bei fehlenden Eingaben wird eine Fehlermeldung angezeigt.
-    if (!vorname || !nachname || !email || !strasse
-        || !hausnummer || !plz || !wohnort || !land || ! passwort ) {
+    if (!benutzername || ! passwort ) {
         fehlerAnzeigen("Bitte füllen Sie alle Felder aus.","registrierungsFehler");
         buttonZuruecksetzen();
         return;
@@ -252,14 +195,7 @@ async function benutzerRegistrieren() {
 
     // RegistrierDaten zusammenstellen und in JSON-Format umwandeln
     let registriereDaten = {
-        "vorname" : vorname,
-        "nachname" : nachname,
-        "email" : email,
-        "strasse" : strasse,
-        "hausnummer" : hausnummer,
-        "plz" : plz,
-        "wohnort" : wohnort,
-        "land" : land,
+        "benutzername" : benutzername,
         "passwort" : passwort
     };
 
@@ -281,12 +217,12 @@ async function benutzerRegistrieren() {
         }
         // Erfolgreiche Anmeldung verarbeiten
         aktiveBenutzerID = ergebnis.id;
-        aktiverBenutzerEmail = ergebnis.email;
-        document.getElementById("anmdelungsname").textContent="Angemeldet als:"+aktiverBenutzerEmail;
+        aktiverBenutzerbenutzername = ergebnis.benutzername;
+        document.getElementById("anmdelungsname").textContent="Angemeldet als:"+aktiverBenutzerbenutzername;
         modal.style.display="none";
         eingabefelderLeeren();
         benutzeroberflaecheAktualisieren();
-        alert("Erfolgreich registriert als " + ergebnis.email);
+        alert("Erfolgreich registriert als " + ergebnis.benutzername);
 
         // TODO: Anmeldebutton zu Abmeldebutton ändern. Später durch UI-Aktualisierung ersetzen
         modalOefnenKnopf.textContent = 'Abmelden';
@@ -297,7 +233,7 @@ async function benutzerRegistrieren() {
     } catch (fehler) {
         // Fehlerbehandlung
         if (fehler.message.includes("403")) {
-            fehlerAnzeigen("Email ist schon registriert.", "registrierungsFehler");
+            fehlerAnzeigen("benutzername ist schon registriert.", "registrierungsFehler");
         } else {
             fehlerAnzeigen(fehler.message, "registrierungsFehler");
         }
@@ -311,7 +247,7 @@ async function benutzerRegistrieren() {
     }
 }
 
-// *********************************************************************************************************************
+// ***************************************************API-Ende****************************************************************
 
 function fehlerAnzeigen(nachricht, element) {
     window.scrollTo(0,0);
@@ -328,16 +264,9 @@ function benutzeroberflaecheAktualisieren() {
 }
 
 function eingabefelderLeeren() {
-    document.getElementById('eingabeEmail').value = '';
+    document.getElementById('eingabebenutzername').value = '';
     document.getElementById('eingabePasswort').value = '';
-    document.getElementById('eingabeRegistrierungsVorname').value = '';
-    document.getElementById('eingabeRegistrierungsNachname').value = '';
-    document.getElementById('eingabeRegistrierungsEmail').value = '';
-    document.getElementById('eingabeRegistrierungsStrasse').value = '';
-    document.getElementById('eingabeRegistrierungsHausnummer').value = '';
-    document.getElementById('eingabeRegistrierungsPLZ').value = '';
-    document.getElementById('eingabeRegistrierungsWohnort').value = '';
-    document.getElementById('eingabeRegistrierungsLand').value = '';
+    document.getElementById('eingabeRegistrierungsbenutzername').value = '';
     document.getElementById('eingabeRegistrierungsPasswort').value = '';
 }
 
