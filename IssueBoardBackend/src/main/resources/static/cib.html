@@ -1,10 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Issue Board</title>
+    <link rel="stylesheet" href="css/cib.css">
 </head>
 <body>
-<p>meddl<p>
+<!-- Navigationsleiste -->
+<div class="NavLeiste">
+    <div id="anmdelungsname" class="anmeldungsname"></div>
+    <div class="name">Cloud Issue Board</div>
+    <button class="KnopfAnmelden" id="anmeldenKnopf">Anmelden</button>
+</div>
+
+<div id="modal" class="modal">
+    <!-- Modal Inhalt -->
+    <div class="anmelde-container">
+        <span class="modalSchliessenKnopf" id="modalSchliessen">&times;</span>
+        <div class="anmelde-box">
+            <h1>Cloud Issue Board</h1>
+            <div class="tabs">
+                <button id="anmeldeTab" class="tab-button active" >Anmelden</button>
+                <button id="registrierungsTab" class="tab-button" >Registrieren</button>
+            </div>
+            <!-- Anmeldeformular -->
+            <div id="benutzerAnmeldeFormular" class="anmelde-formular">
+                <h2>Anmeldung</h2>
+                <div id="anmeldeFehler" class="fehler-meldung"></div>
+
+                <div class="eingabe-gruppe">
+                    <label for="eingabebenutzername">benutzername</label>
+                    <input type="text"
+                           id="eingabebenutzername"
+                           placeholder="benutzername eingeben"
+                           autocomplete="benutzername">
+                </div>
+
+                <div class="eingabe-gruppe">
+                    <label for="eingabePasswort">Passwort</label>
+                    <input type="password"
+                           id="eingabePasswort"
+                           placeholder="••••••••"
+                           autocomplete="current-password">
+                </div>
+
+                <button id="benutzerAnmeldeButton" class="anmelde-button">
+                    Anmelden
+                </button>
+            </div>
+            <!-- Registrierungsformular -->
+            <div id="benutzerRegistrierungsFormular" class="anmelde-formular" style="display:none;">
+                <h2>Registrierung</h2>
+                <div id="registrierungsFehler" class="fehler-meldung"></div>
+
+                <div class="eingabe-gruppe">
+                    <label for="eingabeRegistrierungsbenutzername">Benutzername</label>
+                    <input type="text"
+                           id="eingabeRegistrierungsbenutzername"
+                           placeholder="benutzername"
+                           autocomplete="name"
+                    >
+                </div>
+                
+                <div class="eingabe-gruppe">
+                    <label for="eingabeRegistrierungsPasswort">Passwort</label>
+                    <input type="password"
+                           id="eingabeRegistrierungsPasswort"
+                           placeholder="••••••••"
+                           autocomplete="new-password">
+                </div>
+
+                <button id="benutzerRegistrierungsButton" class="anmelde-button">
+                    Registrieren
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Fußzeile -->
+<div class="Fusszeile">
+</div>
+
+<script src="js/cib.js"></script>
+
 </body>
 </html>
