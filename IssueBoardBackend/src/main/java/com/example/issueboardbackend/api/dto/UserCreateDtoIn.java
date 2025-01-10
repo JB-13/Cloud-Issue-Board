@@ -3,7 +3,7 @@ package com.example.issueboardbackend.api.dto;
 
 public class UserCreateDtoIn {
     String username;
-    String passwort;
+    String password;
     String role;
 
     public String getUsername() {
@@ -14,12 +14,12 @@ public class UserCreateDtoIn {
         this.username = username;
     }
 
-    public String getPasswort() {
-        return passwort;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswort(String passwort) {
-        this.passwort = passwort;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getRole() {

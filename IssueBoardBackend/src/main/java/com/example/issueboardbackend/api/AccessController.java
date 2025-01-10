@@ -29,11 +29,11 @@ public class AccessController {
     @PostMapping
     public ResponseEntity<LoginDtoOut> login(@RequestBody LoginDtoIn loginDtoIn) {
         String username = loginDtoIn.getUsername();
-        String passwort = loginDtoIn.getPasswort();
+        String password = loginDtoIn.getPassword();
 
         User user = userService.getUserByUsername(username);
 
-        if (!PasswordTools.checkPassword(passwort, user.getPasswordHash(), user.getPasswordSalt())) {
+        if (!PasswordTools.checkPassword(password, user.getPasswordHash(), user.getPasswordSalt())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 

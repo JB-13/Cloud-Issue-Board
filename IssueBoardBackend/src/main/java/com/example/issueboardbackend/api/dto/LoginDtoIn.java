@@ -2,7 +2,7 @@ package com.example.issueboardbackend.api.dto;
 
 public class LoginDtoIn {
     private String username;
-    private String passwort;
+    private String password;
 
     public String getUsername() {
         return username;
@@ -12,11 +12,11 @@ public class LoginDtoIn {
         this.username = username;
     }
 
-    public String getPasswort() {
-        return passwort;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswort(String passwort) {
-        this.passwort = passwort;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
