@@ -16,10 +16,10 @@ public class UserRepositoryJPAImpl implements UserRepositoryJPA{
     public UserRepositoryJPAImpl(EntityManager entityManager) {this.entityManager = entityManager;}
 
     @Override
-    public User createUser(String username, String passwort, String role)
+    public User createUser(String username, String password, String role)
     {
         byte[] passwordSalt = PasswordTools.generateSalt();
-        byte[] passwordHash = PasswordTools.generatePasswordHash(passwort, passwordSalt);
+        byte[] passwordHash = PasswordTools.generatePasswordHash(password, passwordSalt);
 
         User user = new User(username, passwordSalt, passwordHash, role);
 

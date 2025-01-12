@@ -61,7 +61,7 @@ public class UserController {
     {
         try {
             User user = userService.createUser(userCreateDtoIn.getUsername(),
-                    userCreateDtoIn.getPasswort(),
+                    userCreateDtoIn.getPassword(),
                     userCreateDtoIn.getRole());
 
             AccessToken accessToken = accessManager.createUserToken(user);
