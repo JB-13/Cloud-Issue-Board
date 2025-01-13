@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignoriere den Ordner, der die Service-Account-Datei enthält
+/config/issueboard-service-account-key.json
+
