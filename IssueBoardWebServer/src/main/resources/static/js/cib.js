@@ -50,6 +50,7 @@ window.onload = function() {
 // Globale Variablen für die Benutzersitzung
 let aktiveBenutzerID = null;
 let aktiverBenutzerbenutzername = null;
+let  aktiverZugriffsToken = null;
 
 
 // Initzialisere IssueBoard
@@ -168,19 +169,20 @@ async function benutzerAnmelden() {
 
 	// Anmeldedaten zusammenstellen und in JSON-Format umwandeln
 	let anmeldeDaten = {
-		"benutzername": benutzername,
-		"passwort": passwort
+		"username": benutzername,
+		"password": passwort
 	};
 
 	console.log("Anmeldedaten: ", anmeldeDaten);
 
 	try {
 		// API-Anfrage an den Server
-		const antwort = await fetch("/api/login", {
+		const antwort = await fetch("http://localhost:8081/access", {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'
+				
 			},
 			body: JSON.stringify(anmeldeDaten)
 		});
@@ -194,8 +196,9 @@ async function benutzerAnmelden() {
 
 		// Erfolgreiche Anmeldung verarbeiten
 		aktiveBenutzerID = ergebnis.id;
-		aktiverBenutzerbenutzername = ergebnis.benutzername;
+		aktiverBenutzerbenutzername = ergebnis.username;
 		document.getElementById("anmdelungsname").textContent = "Angemeldet als: " + aktiverBenutzerbenutzername;
+		aktiverZugriffsToken = ergebnis.credential.accessToken;
 		// Modal schließen
 		modal.style.display = "none";
 
@@ -231,9 +234,14 @@ async function abmelden() {
 	fehlerMeldungLeeren();
 	modal.style.display = "none";
 	try {
-		const antwort = await fetch(`/api/logout`, {
+		const antwort = await fetch("http://localhost:8081/access", {
 			method: 'DELETE',
+			headers:{
+			'Accept': 'application/json',
 			credentials: "include",
+			'accessToken': aktiverZugriffsToken
+			}
+
 		});
 
 		if (!antwort.ok) {
@@ -243,6 +251,7 @@ async function abmelden() {
 		// Globale Variablen zurücksetzen
 		aktiveBenutzerID = null;
 		aktiverBenutzerbenutzername = null;
+		aktiverZugriffsToken = null;
 		document.getElementById("anmdelungsname").textContent = "";
 		eingabefelderLeeren();
 		benutzeroberflaecheAktualisieren();
@@ -285,13 +294,14 @@ async function benutzerRegistrieren() {
 
 	// RegistrierDaten zusammenstellen und in JSON-Format umwandeln
 	let registriereDaten = {
-		"benutzername": benutzername,
-		"passwort": passwort
+		"username": benutzername,
+		"password": passwort,
+		"role": "a"
 	};
 
 	try {
 		// API-Anfrage an den Server
-		const antwort = await fetch("/api/registrieren", {
+		const antwort = await fetch("http://localhost:8081/user", {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
@@ -307,12 +317,13 @@ async function benutzerRegistrieren() {
 		}
 		// Erfolgreiche Anmeldung verarbeiten
 		aktiveBenutzerID = ergebnis.id;
-		aktiverBenutzerbenutzername = ergebnis.benutzername;
+		aktiverBenutzerbenutzername = ergebnis.username;
+		aktiverZugriffsToken = ergebnis.credential.zugriffsToken;
 		document.getElementById("anmdelungsname").textContent = "Angemeldet als:" + aktiverBenutzerbenutzername;
 		modal.style.display = "none";
 		eingabefelderLeeren();
 		benutzeroberflaecheAktualisieren();
-		alert("Erfolgreich registriert als " + ergebnis.benutzername);
+		alert("Erfolgreich registriert als " + ergebnis.username);
 
 		// TODO: Anmeldebutton zu Abmeldebutton ändern. Später durch UI-Aktualisierung ersetzen
 		modalOefnenKnopf.textContent = 'Abmelden';
