@@ -15,9 +15,12 @@ services:
     networks:
       - internal-network
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://issue_board:3306/issue_board
-      - SPRING_DATASOURCE_USERNAME=myuser
-      - SPRING_DATASOURCE_PASSWORD=secret
+      - SPRING_DATASOURCE_URL=jdbc:mysql://google/issue_board?cloudSqlInstance=braided-facet-447714-a7:europe-west9:issueboard-db&socketFactory=com.google.cloud.sql.mysql.SocketFactory
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA=public
+      - SPRING_JPA_HIBERNATE_DDL-AUTO=update
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
     depends_on:
       issue_board:
         condition: service_healthy
