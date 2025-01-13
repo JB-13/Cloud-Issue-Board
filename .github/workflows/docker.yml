@@ -1,0 +1,43 @@
+name: Docker Build and Deploy
+
+on:
+  push:
+    branches:
+      - "6-github-actions"  # Der Branch, auf dem die Actions ausgeführt werden sollen
+  pull_request:
+    branches:
+      - "6-github-actions"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Der Runner, auf dem der Workflow ausgeführt wird
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4  # Repository auschecken, damit Dockerfiles und docker-compose.yml verfügbar sind
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2  # Setup für Docker Buildx, ermöglicht erweiterte Features wie Multi-Architektur Builds
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache  # Cache Docker Layers, um die Build-Zeiten zu optimieren
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
+
+      - name: Build and push Docker images (optional)
+        run: |
+          docker-compose -f docker-compose.yml build  # Baue die Docker-Images mit Docker Compose
+          docker-compose -f docker-compose.yml up -d  # Starte die Container im Hintergrund
+
+      - name: Run tests (optional)
+        run: |
+          # Wenn du Tests ausführen möchtest, kannst du hier einfügen
+          docker-compose -f docker-compose.yml exec issueboardbackend ./runTests.sh  # Beispiel, wie man Tests im Container ausführt
+
+      - name: Shutdown Docker containers (optional)
+        run: |
+          docker-compose -f docker-compose.yml down  # Stoppt und entfernt die Container, wenn die Tests abgeschlossen sind
