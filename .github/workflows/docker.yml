@@ -20,24 +20,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-docker-
-
-      - name: Build and push Docker images (optional)
+      - name: Set up Docker Compose
         run: |
-          docker-compose -f compose.yaml build  
-          docker-compose -f compose.yaml up -d  
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
 
-      - name: Run tests (optional)
+      - name: Build and push Docker images
         run: |
-          # Wenn du Tests ausführen möchtest, kannst du hier einfügen
-          docker-compose -f compose.yaml exec issueboardbackend ./runTests.sh  
+          docker-compose -f compose.yaml build
+          docker-compose -f compose.yaml up -d
 
-      - name: Shutdown Docker containers (optional)
+      - name: Run tests in Docker containers
         run: |
-          docker-compose -f compose.yaml down  
+          docker-compose -f compose.yaml exec issueboardbackend ./runTests.sh
+
+      - name: Shutdown Docker containers
+        run: |
+          docker-compose -f compose.yaml down
