@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @Entity
 @Table(name = "issues")
@@ -39,6 +40,18 @@ public class Issue {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
+
+    public Issue(String titel, String description, String status, Instant createdAt, Instant updatedAt, User createdBy, User assignedTo) {
+        this.titel = titel;
+        this.description = description;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.createdBy = createdBy;
+        this.assignedTo = assignedTo;
+    }
+
+    public Issue() {}
 
     public Integer getId() {
         return id;
@@ -102,6 +115,20 @@ public class Issue {
 
     public void setAssignedTo(User assignedTo) {
         this.assignedTo = assignedTo;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if ( this == o ) return true;
+        if ( o == null || getClass() != o.getClass() ) return false;
+        Issue issue = (Issue) o;
+        return id == issue.id;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id);
     }
 
 }
