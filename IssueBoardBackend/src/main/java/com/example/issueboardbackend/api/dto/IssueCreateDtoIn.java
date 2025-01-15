@@ -1,6 +1,5 @@
 package com.example.issueboardbackend.api.dto;
 
-import com.example.issueboardbackend.model.User;
 
 import java.time.Instant;
 
@@ -10,8 +9,8 @@ public class IssueCreateDtoIn {
     String status;
     Instant createdAt;
     Instant updatedAt;
-    User createdBy;
-    User assignedTo;
+    Integer createdBy;
+    Integer assignedTo;
 
     public String getTitel() {
         return titel;
@@ -53,19 +52,19 @@ public class IssueCreateDtoIn {
         this.updatedAt = updatedAt;
     }
 
-    public User getCreatedBy() {
+    public int getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(User createdBy) {
+    public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
 
-    public User getAssignedTo() {
+    public Integer getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(User assignedTo) {
+    public void setAssignedTo(Integer assignedTo) {
         this.assignedTo = assignedTo;
     }
 }

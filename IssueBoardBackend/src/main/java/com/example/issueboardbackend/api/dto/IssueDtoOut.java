@@ -12,8 +12,8 @@ public class IssueDtoOut {
     String status;
     Instant createdAt;
     Instant updatedAt;
-    User createdBy;
-    User assignedTo;
+    Integer createdBy;
+    Integer assignedTo;
 
     public IssueDtoOut(Issue issue) {
         this.id = issue.getId();
@@ -22,7 +22,7 @@ public class IssueDtoOut {
         this.status = issue.getStatus();
         this.createdAt = issue.getCreatedAt();
         this.updatedAt = issue.getUpdatedAt();
-        this.createdBy = issue.getCreatedBy();
-        this.assignedTo = issue.getAssignedTo();
+        this.createdBy = issue.getCreatedBy() != null ? issue.getCreatedBy().getUserId() : null;
+        this.assignedTo = issue.getAssignedTo() != null ? issue.getAssignedTo().getUserId() : null;
     }
 }

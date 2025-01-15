@@ -102,19 +102,25 @@ public class UserController {
         checkBerechtigung(accessToken, id);
 
         try {
-            User user = userService.getUserById(id);
-            if (user == null) {
-                return ResponseEntity.notFound().build();
-            }
+            Integer createdBy = id;
 
-            Issue createdIssue = issueService.createIssue(issueCreateDtoIn.getTitel(), issueCreateDtoIn.getDescription(), issueCreateDtoIn.getStatus(), issueCreateDtoIn.getCreatedAt(), issueCreateDtoIn.getUpdatedAt(), user, issueCreateDtoIn.getAssignedTo());
-            IssueDtoOut issueDtoOut = new IssueDtoOut(createdIssue);
+            Issue issue = issueService.createIssue(
+                    issueCreateDtoIn.getTitel(),
+                    issueCreateDtoIn.getDescription(),
+                    issueCreateDtoIn.getStatus(),
+                    issueCreateDtoIn.getCreatedAt(),
+                    issueCreateDtoIn.getUpdatedAt(),
+                    createdBy,
+                    issueCreateDtoIn.getAssignedTo()
+            );
+            IssueDtoOut issueDtoOut = new IssueDtoOut(issue);
             return ResponseEntity.status(HttpStatus.CREATED).body(issueDtoOut);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
         }
     }
+
 
     @GetMapping("/issues")
     public ResponseEntity<?> getIssues() {

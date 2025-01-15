@@ -4,6 +4,7 @@ package com.example.issueboardbackend.model.dbaccess;
 import com.example.issueboardbackend.model.Issue;
 import com.example.issueboardbackend.model.User;
 import com.example.issueboardbackend.model.dbaccess.repos.IssueRepository;
+import com.example.issueboardbackend.model.dbaccess.repos.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,11 +16,13 @@ import java.util.List;
 @Transactional
 public class IssueService {
 
+    private UserRepository userRepository;
     private IssueRepository issueRepository;
 
     @Autowired
-    public IssueService(IssueRepository issueRepository) {
+    public IssueService(IssueRepository issueRepository, UserRepository userRepository) {
         this.issueRepository = issueRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Issue> getAllIssues() {return issueRepository.getAll();}
@@ -28,7 +31,10 @@ public class IssueService {
 
     public Issue getIssueById(int id) {return issueRepository.getIssueById(id);}
 
-    public Issue createIssue(String titel, String description, String status, Instant createdAt, Instant updatedAt, User createdBy, User assignedTo) {
+    public Issue createIssue(String titel, String description, String status, Instant createdAt, Instant updatedAt, Integer createdById, Integer assignedToId) {
+        User createdBy = createdById != null ? userRepository.findById(createdById).orElse(null) : null;
+        User assignedTo = assignedToId != null ? userRepository.findById(assignedToId).orElse(null) : null;
+
         return issueRepository.createIssue(titel, description, status, createdAt, updatedAt, createdBy, assignedTo);
     }
 
