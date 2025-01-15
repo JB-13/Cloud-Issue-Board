@@ -116,7 +116,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}/assets")
+    @GetMapping("/issues")
     public ResponseEntity<?> getIssues() {
 
         try {

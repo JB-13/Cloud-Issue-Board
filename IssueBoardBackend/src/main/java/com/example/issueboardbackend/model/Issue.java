@@ -17,7 +17,6 @@ public class Issue {
     @Column(name = "titel", nullable = false)
     private String titel;
 
-    @Lob
     @Column(name = "description")
     private String description;
 
