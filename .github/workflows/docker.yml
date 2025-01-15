@@ -1,13 +1,10 @@
 name: Docker Build and Deploy
 
 on:
-  push:
-    branches:
-      - "6-github-actions"
-  pull_request:
-    branches:
-      - "6-github-actions"
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Java CI with Maven"]
+    types:
+      - completed
 
 jobs:
   build:
