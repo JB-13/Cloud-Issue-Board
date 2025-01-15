@@ -35,7 +35,7 @@ window.onload = function() {
 		.addEventListener('click', function() { switchTab('anmelden'); });
 	document.getElementById("registrierungsTab")
 		.addEventListener('click', function() { switchTab('registrieren'); });
-		
+
 	// Event-Listener für Enter-Taste in Eingabefeldern
 	document.querySelectorAll('input').forEach(eingabefeld => {
 		eingabefeld.addEventListener('keypress', function(ereignis) {
@@ -44,103 +44,147 @@ window.onload = function() {
 			}
 		});
 	});
-	initializeIssueBoard() 
+	initializeIssueBoard();
+	initializeCreateIssueForm();
 };
 
 // Globale Variablen für die Benutzersitzung
 let aktiveBenutzerID = null;
 let aktiverBenutzerbenutzername = null;
-let  aktiverZugriffsToken = null;
+let aktiverZugriffsToken = null;
 
 
 // Initzialisere IssueBoard
 function initializeIssueBoard() {
+
+	issues = document.querySelectorAll('.issue');
+	dropzones = document.querySelectorAll('.dropzone');
+	addspalteButton = document.querySelector('.add-spalte');
+	createIssueButton = document.querySelector('.create-issue-button');
+	board = document.querySelector('.board');
+
+	//Dragging für jedes Issue
+	issues.forEach(issue => {
+		issue.addEventListener('dragstart', () => {
+			issue.classList.add('dragging');
+		});
+
+		issue.addEventListener('dragend', () => {
+			issue.classList.remove('dragging');
+		});
+	});
+
+	//Drop Plätze für die Issues mit Highlighting
+	dropzones.forEach(dropzone => {
+		dropzone.addEventListener('dragover', (e) => {
+			e.preventDefault();
+			dropzone.classList.add('dragover');
+		});
+
+		dropzone.addEventListener('dragleave', () => {
+			dropzone.classList.remove('dragover');
+		});
+
+		dropzone.addEventListener('drop', (e) => {
+			e.preventDefault();
+			const dragging = document.querySelector('.dragging');
+			dropzone.appendChild(dragging);
+			dropzone.classList.remove('dragover');
+		});
+	});
+
+	//Listener für den Add Spalte Button
+	addspalteButton.addEventListener('click', () => {
+		const spalte = document.createElement('div');
+		spalte.classList.add('spalte');
+
+		const header = document.createElement('div');
+		header.classList.add('spalte-header');
+		header.textContent = 'New spalte';
+		header.setAttribute('contenteditable', 'true');
+
+		const deleteButton = document.createElement('button');
+		deleteButton.classList.add('delete-spalte');
+		deleteButton.textContent = '\u00D7';
+
+		deleteButton.addEventListener('click', () => {
+			spalte.remove();
+		});
+
+		const dropzone = document.createElement('div');
+		dropzone.classList.add('dropzone');
+
+		dropzone.addEventListener('dragover', (e) => {
+			e.preventDefault();
+			dropzone.classList.add('dragover');
+		});
+
+		dropzone.addEventListener('dragleave', () => {
+			dropzone.classList.remove('dragover');
+		});
+
+		dropzone.addEventListener('drop', (e) => {
+			e.preventDefault();
+			const dragging = document.querySelector('.dragging');
+			dropzone.appendChild(dragging);
+			dropzone.classList.remove('dragover');
+		});
+
+		spalte.appendChild(header);
+		spalte.appendChild(deleteButton);
+		spalte.appendChild(dropzone);
+		board.appendChild(spalte);
+	});
+
+	// Listener zum Löschen der Dummy Spalten
+	document.querySelectorAll('.delete-spalte').forEach(deleteButton => {
+		deleteButton.addEventListener('click', (e) => {
+			const spalte = e.target.closest('.spalte');
+			spalte.remove();
+		});
+	});
 	
- issues = document.querySelectorAll('.issue');
- dropzones = document.querySelectorAll('.dropzone');
- addspalteButton = document.querySelector('.add-spalte');
- board = document.querySelector('.board');
-
-//Dragging für jedes Issue
-issues.forEach(issue => {
-	issue.addEventListener('dragstart', () => {
-		issue.classList.add('dragging');
+	createIssueButton.addEventListener('click', (e) => {
+		// API Anfrage
+	board.style.display="none";
+	document.getElementById('issue-form').style.display="block";
+	createIssueButton.style.display="none";
+	addspalteButton.style.display="none";
+	
 	});
 
-	issue.addEventListener('dragend', () => {
-		issue.classList.remove('dragging');
+}
+
+//initialisiere Create Issue Form
+function initializeCreateIssueForm(){
+	issueForm = document.getElementById('issue-form')
+	titel = document.getElementById('issue-title');
+	decription = document.getElementById('issue-description');
+	assignee = document.getElementById('issue-assignee');
+	confirm = document.getElementById('confirm-issue');
+	cancel = document.getElementById('cancel-issue');
+	
+	//Listener für bestätigen
+	confirm.addEventListener('click', (e) => {
+		// API Anfrage
+	document.getElementById('boardId').style.display="flex";
+	issueForm.style.display="none";
+	document.querySelector('.add-spalte').style.display="block";
+	document.querySelector('.create-issue-button').style.display="block";
+	titel.value='';
+	decription.value  ='';
+	assignee.value= '';
+	// Erstelle Issue und mache ihn in offen. Und füge ein Listener hinzu
 	});
-});
-
-//Drop Plätze für die Issues mit Highlighting
-dropzones.forEach(dropzone => {
-	dropzone.addEventListener('dragover', (e) => {
-		e.preventDefault();
-		dropzone.classList.add('dragover');
-	});
-
-	dropzone.addEventListener('dragleave', () => {
-		dropzone.classList.remove('dragover');
-	});
-
-	dropzone.addEventListener('drop', (e) => {
-		e.preventDefault();
-		const dragging = document.querySelector('.dragging');
-		dropzone.appendChild(dragging);
-		dropzone.classList.remove('dragover');
-	});
-});
-
-//Listener für den Add Spalte Button
-addspalteButton.addEventListener('click', () => {
-	const spalte = document.createElement('div');
-	spalte.classList.add('spalte');
-
-	const header = document.createElement('div');
-	header.classList.add('spalte-header');
-	header.textContent = 'New spalte';
-	header.setAttribute('contenteditable', 'true');
-
-	const deleteButton = document.createElement('button');
-	deleteButton.classList.add('delete-spalte');
-	deleteButton.textContent = '\u00D7';
-
-	deleteButton.addEventListener('click', () => {
-		spalte.remove();
+	//Listener für Abbrechen
+	cancel.addEventListener('click', (e) => {
+	document.getElementById('boardId').style.display="flex";
+	document.querySelector('.add-spalte').style.display="block";
+	document.querySelector('.create-issue-button').style.display="block";
+	issueForm.style.display="none";
 	});
 
-	const dropzone = document.createElement('div');
-	dropzone.classList.add('dropzone');
 
-	dropzone.addEventListener('dragover', (e) => {
-		e.preventDefault();
-		dropzone.classList.add('dragover');
-	});
-
-	dropzone.addEventListener('dragleave', () => {
-		dropzone.classList.remove('dragover');
-	});
-
-	dropzone.addEventListener('drop', (e) => {
-		e.preventDefault();
-		const dragging = document.querySelector('.dragging');
-		dropzone.appendChild(dragging);
-		dropzone.classList.remove('dragover');
-	});
-
-	spalte.appendChild(header);
-	spalte.appendChild(deleteButton);
-	spalte.appendChild(dropzone);
-	board.appendChild(spalte);
-});
-
-// Listener zum Löschen der Dummy Spalten
-document.querySelectorAll('.delete-spalte').forEach(deleteButton => {
-	deleteButton.addEventListener('click', (e) => {
-		const spalte = e.target.closest('.spalte');
-		spalte.remove();
-	});
-});
 
 }
 
@@ -182,7 +226,7 @@ async function benutzerAnmelden() {
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'
-				
+
 			},
 			body: JSON.stringify(anmeldeDaten)
 		});
@@ -236,10 +280,10 @@ async function abmelden() {
 	try {
 		const antwort = await fetch("http://localhost:8081/access", {
 			method: 'DELETE',
-			headers:{
-			'Accept': 'application/json',
-			credentials: "include",
-			'accessToken': aktiverZugriffsToken
+			headers: {
+				'Accept': 'application/json',
+				credentials: "include",
+				'accessToken': aktiverZugriffsToken
 			}
 
 		});
