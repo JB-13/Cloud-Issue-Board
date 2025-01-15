@@ -1,11 +1,11 @@
 package com.example.issueboardbackend.api;
 
-import com.example.issueboardbackend.api.dto.LoginDtoOut;
-import com.example.issueboardbackend.api.dto.UserCreateDtoIn;
-import com.example.issueboardbackend.api.dto.UserDtoOut;
+import com.example.issueboardbackend.api.dto.*;
 import com.example.issueboardbackend.api.security.AccessManager;
 import com.example.issueboardbackend.api.security.AccessToken;
+import com.example.issueboardbackend.model.Issue;
 import com.example.issueboardbackend.model.User;
+import com.example.issueboardbackend.model.dbaccess.IssueService;
 import com.example.issueboardbackend.model.dbaccess.UserService;
 import com.example.issueboardbackend.model.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 
 @CrossOrigin
@@ -24,11 +26,13 @@ public class UserController {
 
     private final UserService userService;
     private final AccessManager accessManager;
+    private final IssueService issueService;
 
     @Autowired
-    public UserController(AccessManager accessManager, UserService userService) {
+    public UserController(AccessManager accessManager, UserService userService, IssueService issueService) {
         this.userService = userService;
         this.accessManager = accessManager;
+        this.issueService = issueService;
     }
 
     @GetMapping
@@ -88,6 +92,55 @@ public class UserController {
             return ResponseEntity.ok().build();
         } catch (NotFoundException exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getLocalizedMessage());
+        }
+    }
+
+
+    @PostMapping("/{id}/issue")
+    public ResponseEntity<?> createIssue(@RequestHeader AccessToken accessToken, @PathVariable int id, @RequestBody IssueCreateDtoIn issueCreateDtoIn) {
+        checkAnmeldung(accessToken);
+        checkBerechtigung(accessToken, id);
+
+        try {
+            User user = userService.getUserById(id);
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Issue createdIssue = issueService.createIssue(issueCreateDtoIn.getTitel(), issueCreateDtoIn.getDescription(), issueCreateDtoIn.getStatus(), issueCreateDtoIn.getCreatedAt(), issueCreateDtoIn.getUpdatedAt(), user, issueCreateDtoIn.getAssignedTo());
+            IssueDtoOut issueDtoOut = new IssueDtoOut(createdIssue);
+            return ResponseEntity.status(HttpStatus.CREATED).body(issueDtoOut);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
+        }
+    }
+
+    @GetMapping("/{id}/assets")
+    public ResponseEntity<?> getIssues() {
+
+        try {
+            List<Issue> issues = issueService.getAllIssues();
+            List<IssueDtoOut> issueDtoOutList = issues.stream().map(IssueDtoOut::new).toList();
+            return ResponseEntity.ok(issueDtoOutList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
+        }
+    }
+
+
+    @DeleteMapping("/{id}/issue/{issueId}")
+    public ResponseEntity<?> deleteIssue(@RequestHeader AccessToken accessToken, @PathVariable int id, @PathVariable int issueId) {
+        checkAnmeldung(accessToken);
+        checkBerechtigung(accessToken, id);
+
+        try {
+            issueService.deleteIssue(issueId);
+            return ResponseEntity.ok(Collections.singletonMap("message", "Issue successfully deleted."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("message", "Internal server error: " + e.getMessage()));
         }
     }
 
