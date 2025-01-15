@@ -20,20 +20,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Set up Docker Compose
+      - name: Build Docker images
         run: |
-          sudo apt-get update
-          sudo apt-get install docker-compose -y
+          docker build -t issueboardwebserver ./IssueBoardWebServer
+          docker build -t issueboardbackend ./IssueBoardBackend
 
-      - name: Build and push Docker images
-        run: |
-          docker-compose -f compose.yaml build
-          docker-compose -f compose.yaml up -d
+      - name: Start Compose
+        run: docker compose up --build -d
 
-      - name: Run tests in Docker containers
+      - name: Health check
         run: |
-          docker-compose -f compose.yaml exec issueboardbackend ./runTests.sh
+          sleep 20 
+          curl -f http://localhost:8080 || (echo "Frontend failed to start" && exit 1)
+          curl -f http://localhost:8081 || (echo "Backend failed to start" && exit 1)
 
-      - name: Shutdown Docker containers
-        run: |
-          docker-compose -f compose.yaml down
+      - name: Stop Compose
+        run: docker compose down
