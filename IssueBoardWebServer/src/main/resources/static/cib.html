@@ -32,8 +32,8 @@
 
 					<div class="eingabe-gruppe">
 						<label for="eingabebenutzername">Benutzername</label> <input
-							type="text" id="eingabebenutzername"
-							placeholder="benutzername" autocomplete="benutzername">
+							type="text" id="eingabebenutzername" placeholder="benutzername"
+							autocomplete="benutzername">
 					</div>
 
 					<div class="eingabe-gruppe">
@@ -73,10 +73,12 @@
 
 	<!-- Spalte hinufügen -->
 	<button class="add-spalte">Spalte hinzufügen</button>
-
+	<button class="create-issue-button">Issue erstellen</button>
 
 	<!-- Issuea Board Conatiner -->
-	<div class="board">
+	<div class="board" style="display:flex;" id ="boardId">
+	
+	
 		<!-- Dummy Spalte 1 -->
 		<div class="spalte" draggable="false">
 			<div class="spalte-header" contenteditable="true">Offen</div>
@@ -95,7 +97,8 @@
 		</div>
 		<!-- Dummy Spalte 2 -->
 		<div class="spalte" draggable="false">
-			<div class="spalte-header" contenteditable="true">In Bearbeitung</div>
+			<div class="spalte-header" contenteditable="true">In
+				Bearbeitung</div>
 			<button class="delete-spalte">&times;</button>
 			<div class="dropzone">
 				<!-- Dummy Issues  -->
@@ -110,7 +113,7 @@
 			<div class="spalte-header" contenteditable="true">Geschlossen</div>
 			<button class="delete-spalte">&times;</button>
 			<div class="dropzone">
-			<!-- Dummy Issues  -->
+				<!-- Dummy Issues  -->
 				<div class="issue" draggable="true">
 					<div class="issue-title">Issue 4</div>
 					<div class="issue-description">Beschreibung des Issue 4</div>
@@ -118,6 +121,25 @@
 			</div>
 		</div>
 	</div>
+
+
+
+	<!-- Issues erstellen -->
+	<div class="issue-form hidden" style="display: none;" id="issue-form">
+		<h2>Create Issue</h2>
+			<!-- Beschreibung -->
+		<input type="text" placeholder="Title" id="issue-title">
+		<textarea placeholder="Beschreibung" id="issue-description"  rows="15"></textarea>
+		<!-- Dropdown mit Personen -->
+		<select id="issue-assignee">
+			<option value="">Zuweisen an.</option>
+			<option value="User 1">User 1</option>
+			<option value="User 2">User 2</option>
+		</select>
+		<button id="confirm-issue">Bestätigen</button>
+		<button id="cancel-issue">Zurück</button>
+	</div>
+
 
 
 
