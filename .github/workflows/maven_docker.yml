@@ -40,7 +40,7 @@ jobs:
         run: |
           sleep 30 
           curl -f http://localhost:8080/cib.html || (echo "Frontend failed to start" && exit 1)
-          # curl -f http://localhost:8081 || (echo "Backend failed to start" && exit 1)
+          curl -f http://localhost:8081 || (echo "Backend failed to start" && exit 1)
 
       - name: Stop Compose
         run: docker compose down
