@@ -19,6 +19,10 @@ public class IssueRepositoryJPAImpl implements IssueRepositoryJPA{
     @Override
     public Issue createIssue(String titel, String description, String status, Instant createdAt, Instant updatedAt, User createdBy, User assignedTo)
     {
+        if (!createdBy.getRole().equals("Mitarbeiter") && !createdBy.getRole().equals("Admin")) {
+            throw new SecurityException("Benutzer hat keine Berechtigung, das Issue zu erstellen");
+        }
+
         Issue issue = new Issue(titel, description, status, createdAt, updatedAt, createdBy, assignedTo);
 
         entityManager.persist(issue);
@@ -70,7 +74,15 @@ public class IssueRepositoryJPAImpl implements IssueRepositoryJPA{
 
 
     @Override
-    public void deleteIssue(int id){
+    public void deleteIssue(int id, int userId){
+        // Benutzer laden und Rollenprüfung durchführen
+        User currentUser = entityManager.find(User.class, userId);
+        if (currentUser == null) {
+            throw new IllegalArgumentException("Benutzer nicht gefunden");
+        }
+        if (!currentUser.getRole().equals("Mitarbeiter") && !currentUser.getRole().equals("Admin")) {
+            throw new SecurityException("Benutzer hat keine Berechtigung, das Issue zu löschen");
+        }
         Issue issue = entityManager.find(Issue.class, id);
         entityManager.remove(issue);
     }

@@ -65,8 +65,7 @@ public class UserController {
     {
         try {
             User user = userService.createUser(userCreateDtoIn.getUsername(),
-                    userCreateDtoIn.getPassword(),
-                    userCreateDtoIn.getRole());
+                    userCreateDtoIn.getPassword());
 
             AccessToken accessToken = accessManager.createUserToken(user);
 
@@ -77,6 +76,22 @@ public class UserController {
         {
             exception.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getLocalizedMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@RequestHeader AccessToken accessToken, @PathVariable Integer id, @RequestBody UserUpdateDto userUpdateDto) {
+        checkAnmeldung(accessToken);
+        checkBerechtigung(accessToken, id);
+        try {
+            User updatedUser = userService.updateUser(
+                    userUpdateDto.getId(),
+                    userUpdateDto.getRole(),
+                    id
+            );
+            return ResponseEntity.ok(updatedUser);
+        } catch (NotFoundException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getLocalizedMessage());
         }
     }
 
@@ -176,7 +191,7 @@ public class UserController {
         checkBerechtigung(accessToken, id);
 
         try {
-            issueService.deleteIssue(issueId);
+            issueService.deleteIssue(issueId,id);
             return ResponseEntity.ok(Collections.singletonMap("message", "Issue successfully deleted."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

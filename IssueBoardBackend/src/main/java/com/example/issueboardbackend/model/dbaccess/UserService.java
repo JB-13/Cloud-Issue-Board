@@ -25,8 +25,12 @@ public class UserService {
 
     public User getUserById(int userid) {return userRepository.getUserById(userid);}
 
-    public User createUser(String username, String password, String role) {
-        return userRepository.createUser(username, password, role);
+    public User createUser(String username, String password) {
+        return userRepository.createUser(username, password);
+    }
+
+    public User updateUser(int userId, String role, int id) {
+        return userRepository.updateUser(userId, role, id);
     }
 
     public void deleteUser(int userid) {userRepository.deleteUser(userid);}

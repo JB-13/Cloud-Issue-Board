@@ -56,5 +56,5 @@ public class IssueService {
         return issueRepository.updateIssue(issueId,titel,description,status,assignedToId,userId);
     }
 
-    public void deleteIssue(int id) {issueRepository.deleteIssue(id);}
+    public void deleteIssue(int id, int userId) {issueRepository.deleteIssue(id, userId);}
 }
