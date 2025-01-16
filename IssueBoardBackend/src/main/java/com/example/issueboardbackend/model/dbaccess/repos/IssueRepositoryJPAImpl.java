@@ -28,6 +28,46 @@ public class IssueRepositoryJPAImpl implements IssueRepositoryJPA{
         return issue;
     }
 
+    @Override
+    public Issue updateIssue(Integer issueId, String titel, String description, String status, Integer assignedToId, Integer userId) {
+        // Benutzer laden und Rollenprüfung durchführen
+        User currentUser = entityManager.find(User.class, userId);
+        if (currentUser == null) {
+            throw new IllegalArgumentException("Benutzer nicht gefunden");
+        }
+        if (!currentUser.getRole().equals("Mitarbeiter") && !currentUser.getRole().equals("Admin")) {
+            throw new SecurityException("Benutzer hat keine Berechtigung, das Issue zu bearbeiten");
+        }
+
+        // Issue laden
+        Issue issue = entityManager.find(Issue.class, issueId);
+
+        // Felder aktualisieren, falls übergeben
+        if (titel != null && !titel.isEmpty()) {
+            issue.setTitel(titel);
+        }
+        if (description != null && !description.isEmpty()) {
+            issue.setDescription(description);
+        }
+        if (status != null && !status.isEmpty()) {
+            issue.setStatus(status);
+        }
+        if (assignedToId != null) {
+            User assignedTo = entityManager.find(User.class, assignedToId);
+            issue.setAssignedTo(assignedTo);
+        }
+
+        // updatedAt aktualisieren
+        issue.setUpdatedAt(Instant.now());
+
+        // Änderungen speichern
+        entityManager.merge(issue);
+        entityManager.flush();
+        entityManager.refresh(issue);
+
+        return issue;
+    }
+
 
     @Override
     public void deleteIssue(int id){

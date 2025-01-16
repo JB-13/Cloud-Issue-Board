@@ -150,6 +150,26 @@ public class UserController {
     }
 
 
+    @PutMapping("/{id}/issue/{issueId}")
+    public ResponseEntity<?> updateIssue(@RequestHeader AccessToken accessToken, @PathVariable Integer id, @PathVariable Integer issueId, @RequestBody IssueUpdateDto issueUpdateDto) {
+        checkAnmeldung(accessToken);
+        try {
+            Issue updatedIssue = issueService.updateIssue(
+                    issueId,
+                    issueUpdateDto.getTitel(),
+                    issueUpdateDto.getDescription(),
+                    issueUpdateDto.getStatus(),
+                    issueUpdateDto.getAssignedTo(),
+                    id
+            );
+            return ResponseEntity.ok(updatedIssue);
+        } catch (NotFoundException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getLocalizedMessage());
+        }
+    }
+
+
+
     @DeleteMapping("/{id}/issue/{issueId}")
     public ResponseEntity<?> deleteIssue(@RequestHeader AccessToken accessToken, @PathVariable int id, @PathVariable int issueId) {
         checkAnmeldung(accessToken);
