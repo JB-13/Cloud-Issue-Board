@@ -158,7 +158,6 @@ function initializeIssueBoard() {
 
 
 	createIssueButton.addEventListener('click', (e) => {
-		// API Anfrage
 		board.style.display = "none";
 		document.getElementById('issue-form').style.display = "block";
 		createIssueButton.style.display = "none";
@@ -181,15 +180,18 @@ function initializeCreateIssueForm() {
 
 	//Listener für bestätigen
 	confirm.addEventListener('click', (e) => {
-		// API Anfrage
+		issueErstellen();
 		document.getElementById('boardId').style.display = "flex";
 		issueForm.style.display = "none";
 		document.querySelector('.add-spalte').style.display = "block";
 		document.querySelector('.create-issue-button').style.display = "block";
+		document.getElementById('aktualisereIssues').style.display = "block";
 		titel.value = '';
 		decription.value = '';
 		assignee.value = '';
-		// Erstelle Issue und mache ihn in offen. Und füge ein Listener hinzu
+		setTimeout(ladeVerfuegbareIssues,200);
+
+		
 	});
 	//Listener für Abbrechen
 	cancel.addEventListener('click', (e) => {
@@ -256,7 +258,7 @@ async function benutzerAnmelden() {
 		const ergebnis = await antwort.json();
 
 		// Erfolgreiche Anmeldung verarbeiten
-		aktiveBenutzerID = ergebnis.id;
+		aktiveBenutzerID = ergebnis.userId;
 		aktiverBenutzerbenutzername = ergebnis.username;
 		document.getElementById("anmdelungsname").textContent = "Angemeldet als: " + aktiverBenutzerbenutzername;
 		aktiverZugriffsToken = ergebnis.credential.accessToken;
@@ -356,7 +358,6 @@ async function benutzerRegistrieren() {
 	let registriereDaten = {
 		"username": benutzername,
 		"password": passwort,
-		"role": "a"
 	};
 
 	try {
@@ -409,7 +410,6 @@ async function benutzerRegistrieren() {
 
 
 // Funktion zum Laden verfügbarer Haltestellen für das Dropdown
-//${aktiveBenutzerID}
 async function ladeVerfuegbareIssues() {
 	try {
 		console.log('Lade verfügbare Issues');
@@ -429,8 +429,8 @@ async function ladeVerfuegbareIssues() {
 		// Alle Spalten referenzieren
 		const spalten = {
 			"open": document.getElementById('spalteOffen'),
-			"inprogress": document.getElementById('spalteInBearbeitung'), 
-			"closed": document.getElementById('spalteGeschlossen') 
+			"inprogress": document.getElementById('spalteInBearbeitung'),
+			"closed": document.getElementById('spalteGeschlossen')
 		};
 
 
@@ -438,22 +438,23 @@ async function ladeVerfuegbareIssues() {
 		issues.forEach(issue => {
 			if (!vorhandeneIssues.has(issue.id)) {
 				// Neues Issue erstellen
-		  if (!issue.status || typeof issue.status !== "string") {
-            issue.status = "open"; // Standardwert
-        }		
-        		
+				if (!issue.status || typeof issue.status !== "string") {
+					issue.status = "open"; // Standardwert
+				}
+
 				issue.status = issue.status.trim().toLowerCase();//standardtisieren
 				const issueElement = document.createElement('div');
 				issueElement.className = 'issue'; // Klasse für Styling
 				issueElement.innerHTML = `
                     <h4 class="issue-title">${issue.titel}</h4>
-                    <p>${issue.beschreibung}</p>
+                    <p>${issue.description}</p>
                 `;
 
 				// Issue in die richtige Spalte einfügen
 				spalten[issue.status] = spalten[issue.status] || spalten["open"]; // Standard-Spalte
 				spalten[issue.status].appendChild(issueElement);
 				vorhandeneIssues.add(issue.id);
+				//TODO: Eventlistene Click für jedes Issue. Click führt auf Edit und Kommentarsektion
 			}
 		});
 
@@ -558,54 +559,56 @@ async function ladeVerfuegbareIssues() {
 }*/
 
 async function issueErstellen() {
-	const select = document.getElementById('neuerZwischenhalt');
-	const haltestelleId = select.value;
 
-	// Validierung
-	if (!haltestelleId) {
-		fehlerAnzeigen('Bitte wählen Sie eine Haltestelle aus', 'zwischenhalteError');
+	// Button-Status während der Registrierung ändern
+
+	// Benutzereingaben auslesen
+	titel = document.getElementById('issue-title').value;
+	decription = document.getElementById('issue-description').value;
+	assignee = document.getElementById('issue-assignee').value;
+	confirm = document.getElementById('confirm-issue');
+
+
+	// Eingabevalidierung. Bei fehlenden Eingaben wird eine Fehlermeldung angezeigt.
+	if (!titel) {
+		alert("Titel notwendig")
 		return;
 	}
 
-	const existingStops = document.querySelectorAll('.zwischenhalt-item');
-	const exists = Array.from(existingStops).some(stop =>
-		stop.dataset.id === haltestelleId
-	);
-	if (exists) {
-		fehlerAnzeigen(fehlerMeldungen['zwischenhalt-existiert'], 'zwischenhalteError');
-		return;
-	}
+	let neueIssueDaten = {
+		"titel": titel,
+		"description": decription,
+		"status": "open",
+		"createdAt": "",
+		"updatedAt": "",
+		"createdBy": aktiveBenutzerID,
+		"assignedTo": assignee
+	};
 
 	try {
 		const response = await fetch(
-			`/fahrzeug-server/admin/routen/${aktuelleRouteId}/zwischenhalte/${haltestelleId}`,
+			`http://localhost:8081/user/${aktiveBenutzerID}/issue`,
 			{
-				credentials: 'include',
-				method: 'PUT',
-				headers: { 'Accept': 'application/json' }
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json',
+					'accessToken': aktiverZugriffsToken
+				},
+				body: JSON.stringify(neueIssueDaten)
 			}
 		);
-
-		if (!response.ok) {
-			if (response.status === 409) {
-				fehlerAnzeigen(fehlerMeldungen['zwischenhalt-invalid'], 'zwischenhalteError');
-				return;
-			}
-			throw new Error('Fehler beim Hinzufügen des Zwischenhalts');
-		}
-
-		// Aktualisierte Route laden
-		await ladeZwischenhalte(aktuelleRouteId);
-
-		// Dropdown zurücksetzen
-		select.value = '';
-
-		// Routen-View aktualisieren
-		await ladeRouten();
+		
+		    if (response.ok) {
+            const responseData = await response.json();
+            console.log('Issue erfolgreich erstellt:', responseData);
+        } else {
+            console.error('Fehler beim Erstellen des Issues:', response.status, await response.text());
+        }
 
 	} catch (error) {
-		console.error('Fehler beim Hinzufügen des Zwischenhalts:', error);
-		fehlerAnzeigen(error.message, 'zwischenhalteError');
+		console.error('Fehler bei Erstellung des Issues', error);
+
 	}
 }
 
