@@ -4,7 +4,6 @@ package com.example.issueboardbackend.api.dto;
 public class UserCreateDtoIn {
     String username;
     String password;
-    String role;
 
     public String getUsername() {
         return username;
@@ -20,13 +19,5 @@ public class UserCreateDtoIn {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 }
