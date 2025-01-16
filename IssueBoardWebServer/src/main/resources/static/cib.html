@@ -74,13 +74,13 @@
 	<!-- Spalte hinufügen -->
 	<button class="add-spalte">Spalte hinzufügen</button>
 	<button class="create-issue-button">Issue erstellen</button>
-
+	<button class="create-issue-button" id="aktualisereIssues">aktualisieren</button>
 	<!-- Issuea Board Conatiner -->
 	<div class="board" style="display:flex;" id ="boardId">
 	
 	
 		<!-- Dummy Spalte 1 -->
-		<div class="spalte" draggable="false">
+		<div class="spalte" draggable="false" id="spalteOffen">
 			<div class="spalte-header" contenteditable="true">Offen</div>
 			<button class="delete-spalte">&times;</button>
 			<div class="dropzone">
@@ -96,7 +96,7 @@
 			</div>
 		</div>
 		<!-- Dummy Spalte 2 -->
-		<div class="spalte" draggable="false">
+		<div class="spalte" draggable="false" id="spalteInBearbeitung">
 			<div class="spalte-header" contenteditable="true">In
 				Bearbeitung</div>
 			<button class="delete-spalte">&times;</button>
@@ -109,7 +109,7 @@
 			</div>
 		</div>
 		<!-- Dummy Spalte 3 -->
-		<div class="spalte" draggable="false">
+		<div class="spalte" draggable="false" id="spalteGeschlossen">
 			<div class="spalte-header" contenteditable="true">Geschlossen</div>
 			<button class="delete-spalte">&times;</button>
 			<div class="dropzone">

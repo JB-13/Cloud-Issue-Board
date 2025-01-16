@@ -41,6 +41,7 @@ window.onload = function() {
 		eingabefeld.addEventListener('keypress', function(ereignis) {
 			if (ereignis.key === 'Enter') {
 				benutzerAnmelden();
+
 			}
 		});
 	});
@@ -54,6 +55,8 @@ let aktiverBenutzerbenutzername = null;
 let aktiverZugriffsToken = null;
 
 
+let vorhandeneIssues = new Set();
+
 // Initzialisere IssueBoard
 function initializeIssueBoard() {
 
@@ -62,6 +65,7 @@ function initializeIssueBoard() {
 	addspalteButton = document.querySelector('.add-spalte');
 	createIssueButton = document.querySelector('.create-issue-button');
 	board = document.querySelector('.board');
+	akutalisiereIssuesButton = document.getElementById('aktualisereIssues');
 
 	//Dragging für jedes Issue
 	issues.forEach(issue => {
@@ -79,6 +83,7 @@ function initializeIssueBoard() {
 		dropzone.addEventListener('dragover', (e) => {
 			e.preventDefault();
 			dropzone.classList.add('dragover');
+
 		});
 
 		dropzone.addEventListener('dragleave', () => {
@@ -138,50 +143,62 @@ function initializeIssueBoard() {
 
 	// Listener zum Löschen der Dummy Spalten
 	document.querySelectorAll('.delete-spalte').forEach(deleteButton => {
+
 		deleteButton.addEventListener('click', (e) => {
 			const spalte = e.target.closest('.spalte');
 			spalte.remove();
 		});
 	});
-	
+
+
+	akutalisiereIssuesButton.addEventListener('click', (e) => {
+		ladeVerfuegbareIssues();
+
+	});
+
+
 	createIssueButton.addEventListener('click', (e) => {
 		// API Anfrage
-	board.style.display="none";
-	document.getElementById('issue-form').style.display="block";
-	createIssueButton.style.display="none";
-	addspalteButton.style.display="none";
-	
+		board.style.display = "none";
+		document.getElementById('issue-form').style.display = "block";
+		createIssueButton.style.display = "none";
+		addspalteButton.style.display = "none";
+		akutalisiereIssuesButton.style.display = "none";
+
+
 	});
 
 }
 
 //initialisiere Create Issue Form
-function initializeCreateIssueForm(){
+function initializeCreateIssueForm() {
 	issueForm = document.getElementById('issue-form')
 	titel = document.getElementById('issue-title');
 	decription = document.getElementById('issue-description');
 	assignee = document.getElementById('issue-assignee');
 	confirm = document.getElementById('confirm-issue');
 	cancel = document.getElementById('cancel-issue');
-	
+
 	//Listener für bestätigen
 	confirm.addEventListener('click', (e) => {
 		// API Anfrage
-	document.getElementById('boardId').style.display="flex";
-	issueForm.style.display="none";
-	document.querySelector('.add-spalte').style.display="block";
-	document.querySelector('.create-issue-button').style.display="block";
-	titel.value='';
-	decription.value  ='';
-	assignee.value= '';
-	// Erstelle Issue und mache ihn in offen. Und füge ein Listener hinzu
+		document.getElementById('boardId').style.display = "flex";
+		issueForm.style.display = "none";
+		document.querySelector('.add-spalte').style.display = "block";
+		document.querySelector('.create-issue-button').style.display = "block";
+		titel.value = '';
+		decription.value = '';
+		assignee.value = '';
+		// Erstelle Issue und mache ihn in offen. Und füge ein Listener hinzu
 	});
 	//Listener für Abbrechen
 	cancel.addEventListener('click', (e) => {
-	document.getElementById('boardId').style.display="flex";
-	document.querySelector('.add-spalte').style.display="block";
-	document.querySelector('.create-issue-button').style.display="block";
-	issueForm.style.display="none";
+		document.getElementById('boardId').style.display = "flex";
+		document.querySelector('.add-spalte').style.display = "block";
+		document.querySelector('.create-issue-button').style.display = "block";
+		document.getElementById('aktualisereIssues').style.display = "block";
+
+		issueForm.style.display = "none";
 	});
 
 
@@ -300,7 +317,6 @@ async function abmelden() {
 		eingabefelderLeeren();
 		benutzeroberflaecheAktualisieren();
 
-		// TODO: Abmeldebutton zu Anmeldebutton ändern. Später durch UI-Aktualisierung ersetzen
 		modalOefnenKnopf.textContent = 'Anmelden';
 		modalOefnenKnopf.removeEventListener('click', abmelden);
 		modalOefnenKnopf.addEventListener('click', function() {
@@ -369,7 +385,6 @@ async function benutzerRegistrieren() {
 		benutzeroberflaecheAktualisieren();
 		alert("Erfolgreich registriert als " + ergebnis.username);
 
-		// TODO: Anmeldebutton zu Abmeldebutton ändern. Später durch UI-Aktualisierung ersetzen
 		modalOefnenKnopf.textContent = 'Abmelden';
 		modalOefnenKnopf.removeEventListener('click', benutzerAnmelden);
 		modalOefnenKnopf.addEventListener('click', abmelden);
@@ -389,6 +404,208 @@ async function benutzerRegistrieren() {
 	function buttonZuruecksetzen() {
 		registrierenButton.textContent = originalerButtonText;
 		registrierenButton.disabled = false;
+	}
+}
+
+
+// Funktion zum Laden verfügbarer Haltestellen für das Dropdown
+//${aktiveBenutzerID}
+async function ladeVerfuegbareIssues() {
+	try {
+		console.log('Lade verfügbare Issues');
+		const response = await fetch('http://localhost:8081/user/issue', {
+			method: 'GET',
+			headers: {
+				'accessToken': aktiverZugriffsToken
+
+			}
+		});
+
+		if (!response.ok) throw new Error('Fehler beim Laden der Issues');
+
+		const issues = await response.json();
+		console.log('Geladene issues:', issues);
+
+		// Alle Spalten referenzieren
+		const spalten = {
+			"open": document.getElementById('spalteOffen'),
+			"inprogress": document.getElementById('spalteInBearbeitung'), 
+			"closed": document.getElementById('spalteGeschlossen') 
+		};
+
+
+
+		issues.forEach(issue => {
+			if (!vorhandeneIssues.has(issue.id)) {
+				// Neues Issue erstellen
+		  if (!issue.status || typeof issue.status !== "string") {
+            issue.status = "open"; // Standardwert
+        }		
+        		
+				issue.status = issue.status.trim().toLowerCase();//standardtisieren
+				const issueElement = document.createElement('div');
+				issueElement.className = 'issue'; // Klasse für Styling
+				issueElement.innerHTML = `
+                    <h4 class="issue-title">${issue.titel}</h4>
+                    <p>${issue.beschreibung}</p>
+                `;
+
+				// Issue in die richtige Spalte einfügen
+				spalten[issue.status] = spalten[issue.status] || spalten["open"]; // Standard-Spalte
+				spalten[issue.status].appendChild(issueElement);
+				vorhandeneIssues.add(issue.id);
+			}
+		});
+
+
+	} catch (error) {
+		console.error('Fehler beim Aktualisieren:', error);
+	}
+}
+
+/*async function ladeFahrten() {
+	try {
+		// Erst alle Busse laden, um die Kennzeichen zuzuordnen
+		const busseResponse = await fetch('/fahrzeug-server/admin/busse', {
+			credentials: 'include',
+			headers: {'Accept': 'application/json'}
+		});
+		const busse = await busseResponse.json();
+
+		// Map für schnellen Zugriff erstellen
+		const busMap = new Map(busse.map(bus => [bus.fin, bus]));
+
+		const response = await fetch('/fahrzeug-server/admin/fahrten', {
+			credentials: 'include',
+			headers: {'Accept': 'application/json'}
+		});
+		const data = await response.json();
+		if (!response.ok) throw new Error(data.message);
+
+		// // TEST: Füge eine Beispiel-wöchentliche Fahrt hinzu
+		// const testData = [...data];
+		// testData.push({
+		//     id: 999,
+		//     routeId: 1,
+		//     busId: "1M8GDM9AXKP042788",
+		//     datum: "2024-12-30T10:00:00", // Ein Montag
+		//     intervall: true,  // Diese Fahrt wird als wöchentlich markiert
+		//     route: {
+		//         startHaltestelle: { name: "Berlin" },
+		//         endHaltestelle: { name: "Hamburg" }
+		//     }
+		// });
+		//
+		// // Fahrten nach einmalig und wöchentlich aufteilen
+		// const einmaligeFahrten = testData.filter(fahrt => !fahrt.intervall);
+		// const woechentlicheFahrten = testData.filter(fahrt => fahrt.intervall);
+
+		// Fahrten nach einmalig und wöchentlich aufteilen
+		const einmaligeFahrten = data.filter(fahrt => !fahrt.intervall);
+		const woechentlicheFahrten = data.filter(fahrt => fahrt.intervall);
+
+		// Einmalige Fahrten rendern
+		const einmaligeBody = document.getElementById('einmaligeFahrtenBody');
+		einmaligeBody.innerHTML = einmaligeFahrten.map(fahrt => {
+			const bus = busMap.get(fahrt.busId);
+			const busKennzeichen = bus ? bus.kennzeichen : fahrt.busId;
+			const fahrtDatum = new Date(fahrt.datum);
+			const istVergangen = fahrtDatum < new Date();
+
+			return `
+				<tr>
+					<td>${fahrtDatum.toLocaleString('de-DE')}</td>
+					<td>${fahrt.route ? `${fahrt.route.startHaltestelle?.name} → ${fahrt.route.endHaltestelle?.name}` : `Route ${fahrt.routeId}`}</td>
+					<td>${busKennzeichen}</td>
+					<td>${istVergangen ? 'Vergangen' : 'Geplant'}</td>
+					<td class="action-buttons">
+						<button class="action-btn edit" title="Bearbeiten" data-id="${fahrt.id}">✎</button>
+						<button class="action-btn delete" title="Löschen" data-id="${fahrt.id}">×</button>
+					</td>
+				</tr>
+			`;
+		}).join('');
+
+		// Wöchentliche Fahrten rendern
+		const woechentlicheBody = document.getElementById('woechentlicheFahrtenBody');
+		woechentlicheBody.innerHTML = woechentlicheFahrten.map(fahrt => {
+			const bus = busMap.get(fahrt.busId);
+			const busKennzeichen = bus ? bus.kennzeichen : fahrt.busId;
+			const fahrtDatum = new Date(fahrt.datum);
+			const wochentag = fahrtDatum.toLocaleString('de-DE', { weekday: 'long' });
+			const uhrzeit = fahrtDatum.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+			return `
+		<tr>
+			<td>Jeden ${wochentag} ${uhrzeit}</td>
+			<td>Route ${fahrt.routeId}</td>  <!-- Geändert -->
+			<td>${busKennzeichen}</td>
+			<td>Wöchentlich</td>
+			<td class="action-buttons">
+				<button class="action-btn edit" title="Bearbeiten" data-id="${fahrt.id}">✎</button>
+				<button class="action-btn delete" title="Löschen" data-id="${fahrt.id}">×</button>
+			</td>
+		</tr>
+	`;
+		}).join('');
+
+		addActionButtonListeners();
+
+	} catch (error) {
+		console.error('Fehler beim Laden der Fahrten:', error);
+		fehlerAnzeigen(error.message, 'verwaltungError');
+	}
+}*/
+
+async function issueErstellen() {
+	const select = document.getElementById('neuerZwischenhalt');
+	const haltestelleId = select.value;
+
+	// Validierung
+	if (!haltestelleId) {
+		fehlerAnzeigen('Bitte wählen Sie eine Haltestelle aus', 'zwischenhalteError');
+		return;
+	}
+
+	const existingStops = document.querySelectorAll('.zwischenhalt-item');
+	const exists = Array.from(existingStops).some(stop =>
+		stop.dataset.id === haltestelleId
+	);
+	if (exists) {
+		fehlerAnzeigen(fehlerMeldungen['zwischenhalt-existiert'], 'zwischenhalteError');
+		return;
+	}
+
+	try {
+		const response = await fetch(
+			`/fahrzeug-server/admin/routen/${aktuelleRouteId}/zwischenhalte/${haltestelleId}`,
+			{
+				credentials: 'include',
+				method: 'PUT',
+				headers: { 'Accept': 'application/json' }
+			}
+		);
+
+		if (!response.ok) {
+			if (response.status === 409) {
+				fehlerAnzeigen(fehlerMeldungen['zwischenhalt-invalid'], 'zwischenhalteError');
+				return;
+			}
+			throw new Error('Fehler beim Hinzufügen des Zwischenhalts');
+		}
+
+		// Aktualisierte Route laden
+		await ladeZwischenhalte(aktuelleRouteId);
+
+		// Dropdown zurücksetzen
+		select.value = '';
+
+		// Routen-View aktualisieren
+		await ladeRouten();
+
+	} catch (error) {
+		console.error('Fehler beim Hinzufügen des Zwischenhalts:', error);
+		fehlerAnzeigen(error.message, 'zwischenhalteError');
 	}
 }
 
