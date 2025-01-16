@@ -29,6 +29,8 @@ public class IssueService {
 
     public Issue getIssueByTitel(String titel) {return issueRepository.getIssueByTitel(titel);}
 
+    public List<Issue> getIssuesByStatus(String status) {return issueRepository.getIssuesByStatus(status);}
+
     public Issue getIssueById(int id) {return issueRepository.getIssueById(id);}
 
     public Issue createIssue(String titel, String description, String status, Instant createdAt, Instant updatedAt, Integer createdById, Integer assignedToId) {

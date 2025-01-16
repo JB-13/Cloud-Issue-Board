@@ -122,8 +122,9 @@ public class UserController {
     }
 
 
-    @GetMapping("/issues")
-    public ResponseEntity<?> getIssues() {
+    @GetMapping("/issue")
+    public ResponseEntity<?> getIssues(@RequestHeader AccessToken accessToken) {
+        checkAnmeldung(accessToken);
 
         try {
             List<Issue> issues = issueService.getAllIssues();
@@ -132,6 +133,19 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
+        }
+    }
+
+    @GetMapping("/issue/{status}")
+    public ResponseEntity<List<IssueDtoOut>> getIssuesByStatus(@RequestHeader AccessToken accessToken, @PathVariable String status) {
+        checkAnmeldung(accessToken);
+        try {
+            List<Issue> issues = issueService.getIssuesByStatus(status);
+            List<IssueDtoOut> issueDtoOutList = issues.stream().map(IssueDtoOut::new).toList();
+            return ResponseEntity.ok(issueDtoOutList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.emptyList());
         }
     }
 

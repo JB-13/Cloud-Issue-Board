@@ -25,4 +25,37 @@ public class IssueDtoOut {
         this.createdBy = issue.getCreatedBy() != null ? issue.getCreatedBy().getUserId() : null;
         this.assignedTo = issue.getAssignedTo() != null ? issue.getAssignedTo().getUserId() : null;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getTitel() {
+        return titel;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Integer getCreatedBy() {
+        return createdBy;
+    }
+
+    public Integer getAssignedTo() {
+        return assignedTo;
+    }
+
 }
