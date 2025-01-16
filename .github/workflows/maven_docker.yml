@@ -38,7 +38,7 @@ jobs:
 
       - name: Health check
         run: |
-          sleep 30 
+          sleep 60 
           curl -f http://localhost:8080/cib.html || (echo "Frontend failed to start" && exit 1)
           curl -f http://localhost:8081/health || (echo "Backend failed to start" && exit 1)
 
