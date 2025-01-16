@@ -163,6 +163,7 @@ function initializeIssueBoard() {
 		createIssueButton.style.display = "none";
 		addspalteButton.style.display = "none";
 		akutalisiereIssuesButton.style.display = "none";
+		ladeVerfuegbareEnwtickler();
 
 
 	});
@@ -464,103 +465,37 @@ async function ladeVerfuegbareIssues() {
 	}
 }
 
-/*async function ladeFahrten() {
-	try {
-		// Erst alle Busse laden, um die Kennzeichen zuzuordnen
-		const busseResponse = await fetch('/fahrzeug-server/admin/busse', {
-			credentials: 'include',
-			headers: {'Accept': 'application/json'}
+// Funktion zum Laden verfügbarer Entwickler für das Dropdown in Issues Erstellen/Issue Bearbeiten
+
+async function ladeVerfuegbareEnwtickler() {
+    try {
+		console.log('Lade verfügbare Issues');
+		const response = await fetch('http://localhost:8081/user', {
+			method: 'GET',
+			headers: {
+				'accessToken': aktiverZugriffsToken
+			}
 		});
-		const busse = await busseResponse.json();
 
-		// Map für schnellen Zugriff erstellen
-		const busMap = new Map(busse.map(bus => [bus.fin, bus]));
+		if (!response.ok) throw new Error('Fehler beim Laden der Entwickler');
 
-		const response = await fetch('/fahrzeug-server/admin/fahrten', {
-			credentials: 'include',
-			headers: {'Accept': 'application/json'}
-		});
-		const data = await response.json();
-		if (!response.ok) throw new Error(data.message);
+        const entwickler = await response.json();
+        console.log('Geladene Entwickler:', entwickler);
 
-		// // TEST: Füge eine Beispiel-wöchentliche Fahrt hinzu
-		// const testData = [...data];
-		// testData.push({
-		//     id: 999,
-		//     routeId: 1,
-		//     busId: "1M8GDM9AXKP042788",
-		//     datum: "2024-12-30T10:00:00", // Ein Montag
-		//     intervall: true,  // Diese Fahrt wird als wöchentlich markiert
-		//     route: {
-		//         startHaltestelle: { name: "Berlin" },
-		//         endHaltestelle: { name: "Hamburg" }
-		//     }
-		// });
-		//
-		// // Fahrten nach einmalig und wöchentlich aufteilen
-		// const einmaligeFahrten = testData.filter(fahrt => !fahrt.intervall);
-		// const woechentlicheFahrten = testData.filter(fahrt => fahrt.intervall);
+        // Dropdown befüllen
+        const select = document.getElementById('issue-assignee');
+        select.innerHTML =  entwickler.map(e => `
+                <option value="${e.userId}">${e.username}</option>
+            `).join('');
 
-		// Fahrten nach einmalig und wöchentlich aufteilen
-		const einmaligeFahrten = data.filter(fahrt => !fahrt.intervall);
-		const woechentlicheFahrten = data.filter(fahrt => fahrt.intervall);
-
-		// Einmalige Fahrten rendern
-		const einmaligeBody = document.getElementById('einmaligeFahrtenBody');
-		einmaligeBody.innerHTML = einmaligeFahrten.map(fahrt => {
-			const bus = busMap.get(fahrt.busId);
-			const busKennzeichen = bus ? bus.kennzeichen : fahrt.busId;
-			const fahrtDatum = new Date(fahrt.datum);
-			const istVergangen = fahrtDatum < new Date();
-
-			return `
-				<tr>
-					<td>${fahrtDatum.toLocaleString('de-DE')}</td>
-					<td>${fahrt.route ? `${fahrt.route.startHaltestelle?.name} → ${fahrt.route.endHaltestelle?.name}` : `Route ${fahrt.routeId}`}</td>
-					<td>${busKennzeichen}</td>
-					<td>${istVergangen ? 'Vergangen' : 'Geplant'}</td>
-					<td class="action-buttons">
-						<button class="action-btn edit" title="Bearbeiten" data-id="${fahrt.id}">✎</button>
-						<button class="action-btn delete" title="Löschen" data-id="${fahrt.id}">×</button>
-					</td>
-				</tr>
-			`;
-		}).join('');
-
-		// Wöchentliche Fahrten rendern
-		const woechentlicheBody = document.getElementById('woechentlicheFahrtenBody');
-		woechentlicheBody.innerHTML = woechentlicheFahrten.map(fahrt => {
-			const bus = busMap.get(fahrt.busId);
-			const busKennzeichen = bus ? bus.kennzeichen : fahrt.busId;
-			const fahrtDatum = new Date(fahrt.datum);
-			const wochentag = fahrtDatum.toLocaleString('de-DE', { weekday: 'long' });
-			const uhrzeit = fahrtDatum.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-
-			return `
-		<tr>
-			<td>Jeden ${wochentag} ${uhrzeit}</td>
-			<td>Route ${fahrt.routeId}</td>  <!-- Geändert -->
-			<td>${busKennzeichen}</td>
-			<td>Wöchentlich</td>
-			<td class="action-buttons">
-				<button class="action-btn edit" title="Bearbeiten" data-id="${fahrt.id}">✎</button>
-				<button class="action-btn delete" title="Löschen" data-id="${fahrt.id}">×</button>
-			</td>
-		</tr>
-	`;
-		}).join('');
-
-		addActionButtonListeners();
-
-	} catch (error) {
-		console.error('Fehler beim Laden der Fahrten:', error);
-		fehlerAnzeigen(error.message, 'verwaltungError');
-	}
-}*/
+    } catch (error) {
+        console.error('Fehler beim Laden der Entwickler:', error);
+        
+    }
+}
 
 async function issueErstellen() {
 
-	// Button-Status während der Registrierung ändern
 
 	// Benutzereingaben auslesen
 	titel = document.getElementById('issue-title').value;
