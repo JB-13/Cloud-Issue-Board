@@ -112,6 +112,27 @@
 		<button id="confirm-issue">Bestätigen</button>
 		<button id="cancel-issue">Zurück</button>
 	</div>
+	
+	
+		<!-- Issues bearbeiten -->
+	<div class="issue-form hidden" style="display: none;" id="issue-form-edit">
+		<h2>Create Issue</h2>
+			<!-- Beschreibung -->
+		<input type="text" placeholder="Title" id="issue-title">
+		<textarea placeholder="Beschreibung" id="issue-description"  rows="15"></textarea>
+		<!-- Dropdown mit Personen -->
+		<select id="issue-assignee">
+			<option value="">Zuweisen an.</option>
+			<option value="User 1">User 1</option>
+			<option value="User 2">User 2</option>
+		</select>
+		<button id="confirm-issue">Bestätigen</button>
+		<button id="cancel-issue">Zurück</button>
+		<button id="delete-issue">Issue Loeschen</button>
+	</div>
+	
+	
+	
 
 
 	<div id="adminView" style="display: none;">

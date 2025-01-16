@@ -80,6 +80,7 @@ function initializeIssueBoard() {
 
 		ladeVerfuegbareBenutzer();
 
+
 	});
 
 	akutalisiereIssuesButton.addEventListener('click', (e) => {
