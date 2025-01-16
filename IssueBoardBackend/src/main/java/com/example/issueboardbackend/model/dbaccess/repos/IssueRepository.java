@@ -13,7 +13,10 @@ public interface IssueRepository extends JpaRepository<Issue, Integer>, IssueRep
     public List<Issue> getAll();
 
     @Query("select i from Issue i where i.titel = ?1")
-    public Issue getIssueByTitel(String username);
+    public Issue getIssueByTitel(String titel);
+
+    @Query("select i from Issue i where i.status = ?1")
+    public List<Issue> getIssuesByStatus(String status);
 
     @Query("select i from Issue i where i.titel = ?1")
     public Issue getIssueById(int userid);
