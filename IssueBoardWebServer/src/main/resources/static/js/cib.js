@@ -41,6 +41,7 @@ window.onload = function() {
 		eingabefeld.addEventListener('keypress', function(ereignis) {
 			if (ereignis.key === 'Enter') {
 				benutzerAnmelden();
+
 			}
 		});
 	});
@@ -54,6 +55,8 @@ let aktiverBenutzerbenutzername = null;
 let aktiverZugriffsToken = null;
 
 
+let vorhandeneIssues = new Set();
+
 // Initzialisere IssueBoard
 function initializeIssueBoard() {
 
@@ -62,6 +65,7 @@ function initializeIssueBoard() {
 	addspalteButton = document.querySelector('.add-spalte');
 	createIssueButton = document.querySelector('.create-issue-button');
 	board = document.querySelector('.board');
+	akutalisiereIssuesButton = document.getElementById('aktualisereIssues');
 
 	//Dragging für jedes Issue
 	issues.forEach(issue => {
@@ -79,6 +83,7 @@ function initializeIssueBoard() {
 		dropzone.addEventListener('dragover', (e) => {
 			e.preventDefault();
 			dropzone.classList.add('dragover');
+
 		});
 
 		dropzone.addEventListener('dragleave', () => {
@@ -138,50 +143,65 @@ function initializeIssueBoard() {
 
 	// Listener zum Löschen der Dummy Spalten
 	document.querySelectorAll('.delete-spalte').forEach(deleteButton => {
+
 		deleteButton.addEventListener('click', (e) => {
 			const spalte = e.target.closest('.spalte');
 			spalte.remove();
 		});
 	});
-	
+
+
+	akutalisiereIssuesButton.addEventListener('click', (e) => {
+		ladeVerfuegbareIssues();
+
+	});
+
+
 	createIssueButton.addEventListener('click', (e) => {
-		// API Anfrage
-	board.style.display="none";
-	document.getElementById('issue-form').style.display="block";
-	createIssueButton.style.display="none";
-	addspalteButton.style.display="none";
-	
+		board.style.display = "none";
+		document.getElementById('issue-form').style.display = "block";
+		createIssueButton.style.display = "none";
+		addspalteButton.style.display = "none";
+		akutalisiereIssuesButton.style.display = "none";
+		ladeVerfuegbareEnwtickler();
+
+
 	});
 
 }
 
 //initialisiere Create Issue Form
-function initializeCreateIssueForm(){
+function initializeCreateIssueForm() {
 	issueForm = document.getElementById('issue-form')
 	titel = document.getElementById('issue-title');
 	decription = document.getElementById('issue-description');
 	assignee = document.getElementById('issue-assignee');
 	confirm = document.getElementById('confirm-issue');
 	cancel = document.getElementById('cancel-issue');
-	
+
 	//Listener für bestätigen
 	confirm.addEventListener('click', (e) => {
-		// API Anfrage
-	document.getElementById('boardId').style.display="flex";
-	issueForm.style.display="none";
-	document.querySelector('.add-spalte').style.display="block";
-	document.querySelector('.create-issue-button').style.display="block";
-	titel.value='';
-	decription.value  ='';
-	assignee.value= '';
-	// Erstelle Issue und mache ihn in offen. Und füge ein Listener hinzu
+		issueErstellen();
+		document.getElementById('boardId').style.display = "flex";
+		issueForm.style.display = "none";
+		document.querySelector('.add-spalte').style.display = "block";
+		document.querySelector('.create-issue-button').style.display = "block";
+		document.getElementById('aktualisereIssues').style.display = "block";
+		titel.value = '';
+		decription.value = '';
+		assignee.value = '';
+		setTimeout(ladeVerfuegbareIssues,200);
+
+		
 	});
 	//Listener für Abbrechen
 	cancel.addEventListener('click', (e) => {
-	document.getElementById('boardId').style.display="flex";
-	document.querySelector('.add-spalte').style.display="block";
-	document.querySelector('.create-issue-button').style.display="block";
-	issueForm.style.display="none";
+		document.getElementById('boardId').style.display = "flex";
+		document.querySelector('.add-spalte').style.display = "block";
+		document.querySelector('.create-issue-button').style.display = "block";
+		document.getElementById('aktualisereIssues').style.display = "block";
+
+		issueForm.style.display = "none";
 	});
 
 
@@ -239,7 +259,7 @@ async function benutzerAnmelden() {
 		const ergebnis = await antwort.json();
 
 		// Erfolgreiche Anmeldung verarbeiten
-		aktiveBenutzerID = ergebnis.id;
+		aktiveBenutzerID = ergebnis.userId;
 		aktiverBenutzerbenutzername = ergebnis.username;
 		document.getElementById("anmdelungsname").textContent = "Angemeldet als: " + aktiverBenutzerbenutzername;
 		aktiverZugriffsToken = ergebnis.credential.accessToken;
@@ -300,7 +320,6 @@ async function abmelden() {
 		eingabefelderLeeren();
 		benutzeroberflaecheAktualisieren();
 
-		// TODO: Abmeldebutton zu Anmeldebutton ändern. Später durch UI-Aktualisierung ersetzen
 		modalOefnenKnopf.textContent = 'Anmelden';
 		modalOefnenKnopf.removeEventListener('click', abmelden);
 		modalOefnenKnopf.addEventListener('click', function() {
@@ -340,7 +359,6 @@ async function benutzerRegistrieren() {
 	let registriereDaten = {
 		"username": benutzername,
 		"password": passwort,
-		"role": "a"
 	};
 
 	try {
@@ -369,7 +387,6 @@ async function benutzerRegistrieren() {
 		benutzeroberflaecheAktualisieren();
 		alert("Erfolgreich registriert als " + ergebnis.username);
 
-		// TODO: Anmeldebutton zu Abmeldebutton ändern. Später durch UI-Aktualisierung ersetzen
 		modalOefnenKnopf.textContent = 'Abmelden';
 		modalOefnenKnopf.removeEventListener('click', benutzerAnmelden);
 		modalOefnenKnopf.addEventListener('click', abmelden);
@@ -389,6 +406,144 @@ async function benutzerRegistrieren() {
 	function buttonZuruecksetzen() {
 		registrierenButton.textContent = originalerButtonText;
 		registrierenButton.disabled = false;
+	}
+}
+
+
+// Funktion zum Laden verfügbarer Haltestellen für das Dropdown
+async function ladeVerfuegbareIssues() {
+	try {
+		console.log('Lade verfügbare Issues');
+		const response = await fetch('http://localhost:8081/user/issue', {
+			method: 'GET',
+			headers: {
+				'accessToken': aktiverZugriffsToken
+
+			}
+		});
+
+		if (!response.ok) throw new Error('Fehler beim Laden der Issues');
+
+		const issues = await response.json();
+		console.log('Geladene issues:', issues);
+
+		// Alle Spalten referenzieren
+		const spalten = {
+			"open": document.getElementById('spalteOffen'),
+			"inprogress": document.getElementById('spalteInBearbeitung'),
+			"closed": document.getElementById('spalteGeschlossen')
+		};
+
+
+
+		issues.forEach(issue => {
+			if (!vorhandeneIssues.has(issue.id)) {
+				// Neues Issue erstellen
+				if (!issue.status || typeof issue.status !== "string") {
+					issue.status = "open"; // Standardwert
+				}
+
+				issue.status = issue.status.trim().toLowerCase();//standardtisieren
+				const issueElement = document.createElement('div');
+				issueElement.className = 'issue'; // Klasse für Styling
+				issueElement.innerHTML = `
+                    <h4 class="issue-title">${issue.titel}</h4>
+                    <p>${issue.description}</p>
+                `;
+
+				// Issue in die richtige Spalte einfügen
+				spalten[issue.status] = spalten[issue.status] || spalten["open"]; // Standard-Spalte
+				spalten[issue.status].appendChild(issueElement);
+				vorhandeneIssues.add(issue.id);
+				//TODO: Eventlistene Click für jedes Issue. Click führt auf Edit und Kommentarsektion
+			}
+		});
+
+
+	} catch (error) {
+		console.error('Fehler beim Aktualisieren:', error);
+	}
+}
+
+// Funktion zum Laden verfügbarer Entwickler für das Dropdown in Issues Erstellen/Issue Bearbeiten
+
+async function ladeVerfuegbareEnwtickler() {
+    try {
+		console.log('Lade verfügbare Issues');
+		const response = await fetch('http://localhost:8081/user', {
+			method: 'GET',
+			headers: {
+				'accessToken': aktiverZugriffsToken
+			}
+		});
+
+		if (!response.ok) throw new Error('Fehler beim Laden der Entwickler');
+
+        const entwickler = await response.json();
+        console.log('Geladene Entwickler:', entwickler);
+
+        // Dropdown befüllen
+        const select = document.getElementById('issue-assignee');
+        select.innerHTML =  entwickler.map(e => `
+                <option value="${e.userId}">${e.username}</option>
+            `).join('');
+
+    } catch (error) {
+        console.error('Fehler beim Laden der Entwickler:', error);
+        
+    }
+}
+
+async function issueErstellen() {
+
+
+	// Benutzereingaben auslesen
+	titel = document.getElementById('issue-title').value;
+	decription = document.getElementById('issue-description').value;
+	assignee = document.getElementById('issue-assignee').value;
+	confirm = document.getElementById('confirm-issue');
+
+
+	// Eingabevalidierung. Bei fehlenden Eingaben wird eine Fehlermeldung angezeigt.
+	if (!titel) {
+		alert("Titel notwendig")
+		return;
+	}
+
+	let neueIssueDaten = {
+		"titel": titel,
+		"description": decription,
+		"status": "open",
+		"createdAt": "",
+		"updatedAt": "",
+		"createdBy": aktiveBenutzerID,
+		"assignedTo": assignee
+	};
+
+	try {
+		const response = await fetch(
+			`http://localhost:8081/user/${aktiveBenutzerID}/issue`,
+			{
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json',
+					'accessToken': aktiverZugriffsToken
+				},
+				body: JSON.stringify(neueIssueDaten)
+			}
+		);
+		
+		    if (response.ok) {
+            const responseData = await response.json();
+            console.log('Issue erfolgreich erstellt:', responseData);
+        } else {
+            console.error('Fehler beim Erstellen des Issues:', response.status, await response.text());
+        }
+
+	} catch (error) {
+		console.error('Fehler bei Erstellung des Issues', error);
+
 	}
 }
 
