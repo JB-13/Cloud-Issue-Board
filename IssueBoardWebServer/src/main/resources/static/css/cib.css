@@ -424,3 +424,58 @@ input::placeholder {
 .issue-form button:hover {
 	background-color: #005BB5;
 }
+
+#adminView {
+  display: none; /* Standardmäßig ausgeblendet */
+  position: fixed; /* Zentral positionieren */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Zentrieren */
+  width: 400px; /* Feste Breite */
+  padding: 20px; /* Innenabstand */
+  border: 1px solid #ccc; /* Rahmen */
+  border-radius: 8px; /* Abgerundete Ecken */
+  background-color: #ffffff; /* Weißer Hintergrund */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Schatten für bessere Sichtbarkeit */
+  z-index: 1000; /* Immer über anderen Inhalten */
+}
+
+#adminView h3 {
+  text-align: center; /* Überschrift zentrieren */
+  margin-bottom: 20px;
+}
+
+#adminView label {
+  display: block; /* Block-Anzeige */
+  margin-bottom: 8px;
+}
+
+#adminView select {
+  width: 100%; /* Volle Breite */
+  margin-bottom: 15px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#adminView button {
+  width: 48%; /* Gleiche Breite für Buttons */
+  padding: 10px;
+  border: none;
+  background-color: #007bff; /* Blau */
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#adminView button:hover {
+  background-color: #0056b3; /* Dunkleres Blau beim Hover */
+}
+
+#adminView button:last-child {
+  background-color: #6c757d; /* Grau für den Abbrechen-Button */
+}
+
+#adminView button:last-child:hover {
+  background-color: #5a6268; /* Dunkleres Grau beim Hover */
+}
