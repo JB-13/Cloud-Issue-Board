@@ -194,44 +194,6 @@ body {
 	display: block;
 }
 
-/*Design für den Platz der Issues*/
-.add-spalte:hover {
-	background-color: #005BB5;
-}
-
-.dropzone {
-	flex: 1;
-	min-height: 50px;
-}
-
-.dropzone.dragover {
-	border: 2px dashed #0078D7;
-	background-color: #e0f7ff;
-}
-/*Design für den X Button beim Spalten Header*/
-.delete-spalte {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	background-color: red;
-	color: white;
-	border: none;
-	border-radius: 50%;
-	width: 20px;
-	height: 20px;
-	font-size: 12px;
-	text-align: center;
-	cursor: pointer;
-}
-
-.delete-spalte:hover {
-	background-color: darkred;
-}
-
-.spalte-header[contenteditable="true"] {
-	border: 1px dashed #0078D7;
-	padding: 5px;
-}
 
 /* Überschriften-Stile */
 h1 {
@@ -423,4 +385,59 @@ input::placeholder {
 /*hover für Bestätigen und Zurück */
 .issue-form button:hover {
 	background-color: #005BB5;
+}
+
+#adminView {
+  display: none; /* Standardmäßig ausgeblendet */
+  position: fixed; /* Zentral positionieren */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Zentrieren */
+  width: 400px; /* Feste Breite */
+  padding: 20px; /* Innenabstand */
+  border: 1px solid #ccc; /* Rahmen */
+  border-radius: 8px; /* Abgerundete Ecken */
+  background-color: #ffffff; /* Weißer Hintergrund */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Schatten für bessere Sichtbarkeit */
+  z-index: 1000; /* Immer über anderen Inhalten */
+}
+
+#adminView h3 {
+  text-align: center; /* Überschrift zentrieren */
+  margin-bottom: 20px;
+}
+
+#adminView label {
+  display: block; /* Block-Anzeige */
+  margin-bottom: 8px;
+}
+
+#adminView select {
+  width: 100%; /* Volle Breite */
+  margin-bottom: 15px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#adminView button {
+  width: 48%; /* Gleiche Breite für Buttons */
+  padding: 10px;
+  border: none;
+  background-color: #007bff; /* Blau */
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#adminView button:hover {
+  background-color: #0056b3; /* Dunkleres Blau beim Hover */
+}
+
+#adminView button:last-child {
+  background-color: #6c757d; /* Grau für den Abbrechen-Button */
+}
+
+#adminView button:last-child:hover {
+  background-color: #5a6268; /* Dunkleres Grau beim Hover */
 }
