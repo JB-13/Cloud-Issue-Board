@@ -1,4 +1,5 @@
 FROM openjdk:21-jdk
-COPY app.jar app.jar
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} backend.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/backend.jar"]

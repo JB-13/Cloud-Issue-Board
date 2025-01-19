@@ -59,7 +59,7 @@
 
 
 	<build>
-		<finalName>app</finalName>
+		<finalName>backend</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
