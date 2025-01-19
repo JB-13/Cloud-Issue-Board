@@ -42,11 +42,13 @@ window.onload = function() {
 			if (ereignis.key === 'Enter') {
 				benutzerAnmelden();
 
+
 			}
 		});
 	});
 	initializeIssueBoard();
 	initializeCreateIssueForm();
+	initializeAdminView();
 };
 
 // Globale Variablen für die Benutzersitzung
@@ -66,93 +68,23 @@ function initializeIssueBoard() {
 	createIssueButton = document.querySelector('.create-issue-button');
 	board = document.querySelector('.board');
 	akutalisiereIssuesButton = document.getElementById('aktualisereIssues');
+	adminViewButton = document.getElementById('adminViewButton');
 
-	//Dragging für jedes Issue
-	issues.forEach(issue => {
-		issue.addEventListener('dragstart', () => {
-			issue.classList.add('dragging');
-		});
 
-		issue.addEventListener('dragend', () => {
-			issue.classList.remove('dragging');
-		});
+	adminViewButton.addEventListener('click', (e) => {
+		board.style.display = "none";
+		document.getElementById('issue-form').style.display = "none";
+		createIssueButton.style.display = "none";
+		akutalisiereIssuesButton.style.display = "none";
+		document.getElementById("adminView").style.display = "block";;
+
+		ladeVerfuegbareBenutzer();
+
 	});
-
-	//Drop Plätze für die Issues mit Highlighting
-	dropzones.forEach(dropzone => {
-		dropzone.addEventListener('dragover', (e) => {
-			e.preventDefault();
-			dropzone.classList.add('dragover');
-
-		});
-
-		dropzone.addEventListener('dragleave', () => {
-			dropzone.classList.remove('dragover');
-		});
-
-		dropzone.addEventListener('drop', (e) => {
-			e.preventDefault();
-			const dragging = document.querySelector('.dragging');
-			dropzone.appendChild(dragging);
-			dropzone.classList.remove('dragover');
-		});
-	});
-
-	//Listener für den Add Spalte Button
-	addspalteButton.addEventListener('click', () => {
-		const spalte = document.createElement('div');
-		spalte.classList.add('spalte');
-
-		const header = document.createElement('div');
-		header.classList.add('spalte-header');
-		header.textContent = 'New spalte';
-		header.setAttribute('contenteditable', 'true');
-
-		const deleteButton = document.createElement('button');
-		deleteButton.classList.add('delete-spalte');
-		deleteButton.textContent = '\u00D7';
-
-		deleteButton.addEventListener('click', () => {
-			spalte.remove();
-		});
-
-		const dropzone = document.createElement('div');
-		dropzone.classList.add('dropzone');
-
-		dropzone.addEventListener('dragover', (e) => {
-			e.preventDefault();
-			dropzone.classList.add('dragover');
-		});
-
-		dropzone.addEventListener('dragleave', () => {
-			dropzone.classList.remove('dragover');
-		});
-
-		dropzone.addEventListener('drop', (e) => {
-			e.preventDefault();
-			const dragging = document.querySelector('.dragging');
-			dropzone.appendChild(dragging);
-			dropzone.classList.remove('dragover');
-		});
-
-		spalte.appendChild(header);
-		spalte.appendChild(deleteButton);
-		spalte.appendChild(dropzone);
-		board.appendChild(spalte);
-	});
-
-	// Listener zum Löschen der Dummy Spalten
-	document.querySelectorAll('.delete-spalte').forEach(deleteButton => {
-
-		deleteButton.addEventListener('click', (e) => {
-			const spalte = e.target.closest('.spalte');
-			spalte.remove();
-		});
-	});
-
 
 	akutalisiereIssuesButton.addEventListener('click', (e) => {
 		ladeVerfuegbareIssues();
+
 
 	});
 
@@ -161,8 +93,8 @@ function initializeIssueBoard() {
 		board.style.display = "none";
 		document.getElementById('issue-form').style.display = "block";
 		createIssueButton.style.display = "none";
-		addspalteButton.style.display = "none";
 		akutalisiereIssuesButton.style.display = "none";
+		document.getElementById("adminView").style.display = "none";;
 		ladeVerfuegbareEnwtickler();
 
 
@@ -190,9 +122,9 @@ function initializeCreateIssueForm() {
 		titel.value = '';
 		decription.value = '';
 		assignee.value = '';
-		setTimeout(ladeVerfuegbareIssues,200);
+		setTimeout(ladeVerfuegbareIssues, 200);
 
-		
+
 	});
 	//Listener für Abbrechen
 	cancel.addEventListener('click', (e) => {
@@ -200,8 +132,41 @@ function initializeCreateIssueForm() {
 		document.querySelector('.add-spalte').style.display = "block";
 		document.querySelector('.create-issue-button').style.display = "block";
 		document.getElementById('aktualisereIssues').style.display = "block";
-
 		issueForm.style.display = "none";
+	});
+
+
+
+}
+//initialisiere Admin View
+function initializeAdminView() {
+	adminView = document.getElementById("adminView");
+	userDropdown = document.getElementById("userDropdown");
+	confirmAdmin = document.getElementById("confirmButton");
+	cancelAdmin = document.getElementById("cancelButton");
+
+
+	//Listener für bestätigen
+	confirmAdmin.addEventListener('click', (e) => {
+		document.getElementById('boardId').style.display = "flex";
+		issueForm.style.display = "none";
+		document.querySelector('.add-spalte').style.display = "block";
+		document.querySelector('.create-issue-button').style.display = "block";
+		document.getElementById('aktualisereIssues').style.display = "block";
+		adminView.style.display = "none";
+		updateUser();
+		userDropdown.value = '';
+		setTimeout(ladeVerfuegbareIssues, 200);
+
+
+	});
+	//Listener für Abbrechen
+	cancelAdmin.addEventListener('click', (e) => {
+		document.getElementById('boardId').style.display = "flex";
+		document.querySelector('.add-spalte').style.display = "block";
+		document.querySelector('.create-issue-button').style.display = "block";
+		document.getElementById('aktualisereIssues').style.display = "block";
+		adminView.style.display = "none";
 	});
 
 
@@ -210,6 +175,36 @@ function initializeCreateIssueForm() {
 
 
 // ***************************************************API-Anfang****************************************************************
+async function checkAdmin() {
+
+	try {
+		console.log('Lade Benutzer');
+		const response = await fetch(`http://localhost:8081/user/${aktiveBenutzerID}`, {
+			method: 'GET',
+			headers: {
+				'accessToken': aktiverZugriffsToken
+			}
+		});
+
+		if (!response.ok) throw new Error('Fehler beim Laden des Benutzer');
+
+		const benutzer = await response.json();
+		console.log('Geladene benutzer:', benutzer);
+
+
+		if (benutzer.role === "Admin") {
+			document.getElementById('adminViewButton').style.display = "block";
+		} else {
+			document.getElementById('adminViewButton').style.display = "none";
+		}
+
+	} catch (error) {
+		console.error('Fehler beim Laden der Entwickler:', error);
+
+	}
+}
+
+
 // Funktion zum Anmelden eines Benutzers
 async function benutzerAnmelden() {
 	fehlerMeldungLeeren();
@@ -219,6 +214,7 @@ async function benutzerAnmelden() {
 	const originalerButtonText = anmeldeButton.textContent;
 	anmeldeButton.textContent = 'Anmeldung läuft...';
 	anmeldeButton.disabled = true;
+	adminViewButton = document.getElementById('adminViewButton');
 
 	// Benutzereingaben auslesen
 	let benutzername = document.getElementById('eingabebenutzername').value;
@@ -269,12 +265,16 @@ async function benutzerAnmelden() {
 		eingabefelderLeeren();
 		benutzeroberflaecheAktualisieren();
 
-		// TODO: Anmeldebutton zu Abmeldebutton ändern. Später durch UI-Aktualisierung ersetzen
 		modalOefnenKnopf.textContent = 'Abmelden';
 		modalOefnenKnopf.removeEventListener('click', benutzerAnmelden);
 		modalOefnenKnopf.addEventListener('click', abmelden);
 
 		console.log("Ergebnis: ", ergebnis);
+		document.getElementById('boardId').style.display = "flex";
+		document.querySelector('.add-spalte').style.display = "block";
+		document.querySelector('.create-issue-button').style.display = "block";
+		document.getElementById('aktualisereIssues').style.display = "block";
+		setTimeout(checkAdmin, 200);
 
 	} catch (fehler) {
 		// Fehlerbehandlung
@@ -293,6 +293,7 @@ async function benutzerAnmelden() {
 		anmeldeButton.disabled = false;
 	}
 }
+
 
 async function abmelden() {
 	fehlerMeldungLeeren();
@@ -319,6 +320,13 @@ async function abmelden() {
 		document.getElementById("anmdelungsname").textContent = "";
 		eingabefelderLeeren();
 		benutzeroberflaecheAktualisieren();
+		//default view
+		document.getElementById('boardId').style.display = "none";
+		document.querySelector('.add-spalte').style.display = "none";
+		document.querySelector('.create-issue-button').style.display = "none";
+		document.getElementById('aktualisereIssues').style.display = "none";
+		document.getElementById("adminView").style.display = "none";
+
 
 		modalOefnenKnopf.textContent = 'Anmelden';
 		modalOefnenKnopf.removeEventListener('click', abmelden);
@@ -327,6 +335,7 @@ async function abmelden() {
 		});
 
 		console.log("Erfolgreich abgemeldet.");
+		document.getElementById('adminViewButton').style.display = "none";
 
 	} catch (fehler) {
 		console.error("Fehler:", fehler.message);
@@ -386,6 +395,11 @@ async function benutzerRegistrieren() {
 		eingabefelderLeeren();
 		benutzeroberflaecheAktualisieren();
 		alert("Erfolgreich registriert als " + ergebnis.username);
+		
+		document.getElementById('boardId').style.display = "flex";
+		document.querySelector('.add-spalte').style.display = "block";
+		document.querySelector('.create-issue-button').style.display = "block";
+		document.getElementById('aktualisereIssues').style.display = "block";
 
 		modalOefnenKnopf.textContent = 'Abmelden';
 		modalOefnenKnopf.removeEventListener('click', benutzerAnmelden);
@@ -469,7 +483,7 @@ async function ladeVerfuegbareIssues() {
 
 async function ladeVerfuegbareEnwtickler() {
     try {
-		console.log('Lade verfügbare Issues');
+		console.log('Lade verfügbare Enwtickler');
 		const response = await fetch('https://backend-590852781274.europe-west1.run.app/user', {
 			method: 'GET',
 			headers: {
@@ -479,20 +493,60 @@ async function ladeVerfuegbareEnwtickler() {
 
 		if (!response.ok) throw new Error('Fehler beim Laden der Entwickler');
 
-        const entwickler = await response.json();
-        console.log('Geladene Entwickler:', entwickler);
-
-        // Dropdown befüllen
-        const select = document.getElementById('issue-assignee');
-        select.innerHTML =  entwickler.map(e => `
+		const entwickler = await response.json();
+		console.log('Geladene Entwickler:', entwickler);
+		
+		const gefilterteEntwickler = entwickler.filter(e => e.role === 'Mitarbeiter' || e.role === 'Admin');
+		// Dropdown befüllen
+		const select = document.getElementById('issue-assignee');
+		select.innerHTML = gefilterteEntwickler.map(e => `
                 <option value="${e.userId}">${e.username}</option>
             `).join('');
 
-    } catch (error) {
-        console.error('Fehler beim Laden der Entwickler:', error);
-        
-    }
+
+	} catch (error) {
+		console.error('Fehler beim Laden der Entwickler:', error);
+
+	}
 }
+
+
+async function ladeVerfuegbareBenutzer() {
+	try {
+		console.log('Lade verfügbare Benutzer');
+		const response = await fetch('http://localhost:8081/user', {
+			method: 'GET',
+			headers: {
+				'accessToken': aktiverZugriffsToken
+			}
+		});
+
+		if (!response.ok) throw new Error('Fehler beim Laden der Benutzer');
+
+		const benutzer = await response.json();
+		console.log('Geladene Benutzer:', benutzer);
+		
+		
+		const gefilterteBenutzer = benutzer.filter(e => e.role != "Admin");
+		// Dropdown befüllen
+		const select = document.getElementById('userDropdown');
+		select.innerHTML = gefilterteBenutzer.map(e => `
+                <option value="${e.userId}">${e.username}</option>
+            `).join('');
+
+
+	} catch (error) {
+		console.error('Fehler beim Laden der Benutzer:', error);
+
+	}
+}
+
+
+
+
+
+
+
 
 async function issueErstellen() {
 
@@ -533,18 +587,57 @@ async function issueErstellen() {
 				body: JSON.stringify(neueIssueDaten)
 			}
 		);
-		
-		    if (response.ok) {
-            const responseData = await response.json();
-            console.log('Issue erfolgreich erstellt:', responseData);
-        } else {
-            console.error('Fehler beim Erstellen des Issues:', response.status, await response.text());
-        }
+
+		if (response.ok) {
+			const responseData = await response.json();
+			console.log('Issue erfolgreich erstellt:', responseData);
+		} else {
+			console.error('Fehler beim Erstellen des Issues:', response.status, await response.text());
+		}
 
 	} catch (error) {
 		console.error('Fehler bei Erstellung des Issues', error);
 
 	}
+}
+
+
+async function updateUser() {
+
+	// Admin auslesen
+	 benutzer = document.getElementById('userDropdown').value;
+	 role = document.getElementById('permissionDropdown').value;
+	 
+
+	// RegistrierDaten zusammenstellen und in JSON-Format umwandeln
+	let updateDaten = {
+		"id": benutzer,
+		"role": role
+	};
+
+	try {
+		// API-Anfrage an den Server
+		const response = await fetch(`http://localhost:8081/user/${aktiveBenutzerID}`, {
+			method: 'PUT',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				'accessToken': aktiverZugriffsToken
+			},
+			body: JSON.stringify(updateDaten)
+		});
+		
+		if (!response.ok) throw new Error('Fehler beim Updaten des Benutzers:');
+
+		const responseData = await response.json();
+		console.log('geupdateter Benutzer:', responseData);
+
+	} catch (error) {
+		console.error('Fehler beim Updaten des Benutzers:', error);
+
+	}
+
+
 }
 
 // ***************************************************API-Ende****************************************************************
