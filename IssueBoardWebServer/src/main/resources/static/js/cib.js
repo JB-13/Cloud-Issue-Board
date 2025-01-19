@@ -179,7 +179,7 @@ async function checkAdmin() {
 
 	try {
 		console.log('Lade Benutzer');
-		const response = await fetch(`http://localhost:8081/user/${aktiveBenutzerID}`, {
+		const response = await fetch(`https://backend-590852781274.europe-west1.run.app/user/${aktiveBenutzerID}`, {
 			method: 'GET',
 			headers: {
 				'accessToken': aktiverZugriffsToken
@@ -514,7 +514,7 @@ async function ladeVerfuegbareEnwtickler() {
 async function ladeVerfuegbareBenutzer() {
 	try {
 		console.log('Lade verfügbare Benutzer');
-		const response = await fetch('http://localhost:8081/user', {
+		const response = await fetch('https://backend-590852781274.europe-west1.run.app/user', {
 			method: 'GET',
 			headers: {
 				'accessToken': aktiverZugriffsToken
@@ -617,7 +617,7 @@ async function updateUser() {
 
 	try {
 		// API-Anfrage an den Server
-		const response = await fetch(`http://localhost:8081/user/${aktiveBenutzerID}`, {
+		const response = await fetch(`https://backend-590852781274.europe-west1.run.app/user/${aktiveBenutzerID}`, {
 			method: 'PUT',
 			headers: {
 				'Accept': 'application/json',
