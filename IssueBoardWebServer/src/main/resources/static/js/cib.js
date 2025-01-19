@@ -241,7 +241,7 @@ async function benutzerAnmelden() {
 
 	try {
 		// API-Anfrage an den Server
-		const antwort = await fetch("http://localhost:8081/access", {
+		const antwort = await fetch("https://backend-590852781274.europe-west1.run.app/access", {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
@@ -298,7 +298,7 @@ async function abmelden() {
 	fehlerMeldungLeeren();
 	modal.style.display = "none";
 	try {
-		const antwort = await fetch("http://localhost:8081/access", {
+		const antwort = await fetch("https://backend-590852781274.europe-west1.run.app/access", {
 			method: 'DELETE',
 			headers: {
 				'Accept': 'application/json',
@@ -363,7 +363,7 @@ async function benutzerRegistrieren() {
 
 	try {
 		// API-Anfrage an den Server
-		const antwort = await fetch("http://localhost:8081/user", {
+		const antwort = await fetch("https://backend-590852781274.europe-west1.run.app/user", {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
@@ -414,7 +414,7 @@ async function benutzerRegistrieren() {
 async function ladeVerfuegbareIssues() {
 	try {
 		console.log('Lade verfügbare Issues');
-		const response = await fetch('http://localhost:8081/user/issue', {
+		const response = await fetch('https://backend-590852781274.europe-west1.run.app/user/issue', {
 			method: 'GET',
 			headers: {
 				'accessToken': aktiverZugriffsToken
@@ -470,7 +470,7 @@ async function ladeVerfuegbareIssues() {
 async function ladeVerfuegbareEnwtickler() {
     try {
 		console.log('Lade verfügbare Issues');
-		const response = await fetch('http://localhost:8081/user', {
+		const response = await fetch('https://backend-590852781274.europe-west1.run.app/user', {
 			method: 'GET',
 			headers: {
 				'accessToken': aktiverZugriffsToken
@@ -522,7 +522,7 @@ async function issueErstellen() {
 
 	try {
 		const response = await fetch(
-			`http://localhost:8081/user/${aktiveBenutzerID}/issue`,
+			`https://backend-590852781274.europe-west1.run.app/user/${aktiveBenutzerID}/issue`,
 			{
 				method: 'POST',
 				headers: {
