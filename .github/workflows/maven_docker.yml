@@ -38,7 +38,7 @@ jobs:
           echo "Checking backend artifacts"
           ls -l IssueBoardBackend/target/
           echo "Checking frontend artifacts"
-          ls -l IssueBoardWebServer"
+          ls -l IssueBoardWebServer/target"
         
       - name: Upload Backend Artifacts
         uses: actions/upload-artifact@v3
