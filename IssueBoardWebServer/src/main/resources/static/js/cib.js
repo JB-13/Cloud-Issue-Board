@@ -26,8 +26,6 @@ window.onclick = function(event) {
 
 window.onload = function() {
 	// Setze Backend URL und logge sie zur Überprüfung
-	const BackendURL = window.BackendURL;
-	console.log('Backend URL:', BackendURL);
 
 	// Event-Listener für den Anmelde-Button
 	document.getElementById("benutzerAnmeldeButton")
@@ -178,6 +176,7 @@ function initializeAdminView() {
 
 
 // ***************************************************API-Anfang****************************************************************
+const BackendURL = "https://backend-590852781274.europe-west1.run.app";
 async function checkAdmin() {
 
 	try {
