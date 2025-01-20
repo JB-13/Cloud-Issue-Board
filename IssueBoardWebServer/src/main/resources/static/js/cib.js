@@ -193,13 +193,19 @@ async function checkAdmin() {
 		const benutzer = await response.json();
 		console.log('Geladene benutzer:', benutzer);
 
-
-		if (benutzer.role === "Admin") {
-			document.getElementById('adminViewButton').style.display = "block";
-		} else {
-			document.getElementById('adminViewButton').style.display = "none";
-		}
-
+        if (benutzer.role === "Admin") {
+            document.getElementById('adminViewButton').style.display = "block";
+            document.querySelector('.create-issue-button').style.display = "block";
+            document.querySelector('.add-spalte').style.display = "block";
+        } else if (benutzer.role === "Zuschauer") {
+            document.getElementById('adminViewButton').style.display = "none";
+            document.querySelector('.create-issue-button').style.display = "none";
+            document.querySelector('.add-spalte').style.display = "none";
+        }else{
+            document.getElementById('adminViewButton').style.display = "none";
+            document.querySelector('.create-issue-button').style.display = "block";
+            document.querySelector('.add-spalte').style.display = "block";
+        }
 	} catch (error) {
 		console.error('Fehler beim Laden der Entwickler:', error);
 
@@ -400,13 +406,15 @@ async function benutzerRegistrieren() {
 		
 		document.getElementById('boardId').style.display = "flex";
 		document.querySelector('.add-spalte').style.display = "block";
-		document.querySelector('.create-issue-button').style.display = "block";
+		//document.querySelector('.create-issue-button').style.display = "block";
 		document.getElementById('aktualisereIssues').style.display = "block";
 
 		modalOefnenKnopf.textContent = 'Abmelden';
 		modalOefnenKnopf.removeEventListener('click', benutzerAnmelden);
 		modalOefnenKnopf.addEventListener('click', abmelden);
 		console.log(ergebnis);
+
+		await checkAdmin();
 
 	} catch (fehler) {
 		// Fehlerbehandlung
