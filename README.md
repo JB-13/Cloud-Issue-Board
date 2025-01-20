@@ -17,7 +17,7 @@ Ein Cloud-basiertes **Issue Board**, welches Benutzern ermöglicht, sich zu regi
 
 ## Cloud oder Lokal
 Unsere Anwendung kann entweder lokal oder auf einer Cloud deployed werden.
-Für die lokale Version benötigst du Docker Desktop.
+Für die lokale Version benötigst du Docker Desktop, für die Cloud Version benötigst du die Google Cloud SDK.
 Wechsle bitte auf den "local" branch für die Installationsanleitung der lokalen Version.
 
 ## Installation Cloud-Version
@@ -51,45 +51,78 @@ Klone als erstes das Repository
     ```
    Kopiere nun die SQL-Anweisungen aus der **User.sql** aus IssueBoardDB Ordner und füge sie in die Cloud Shell ein.
    Anschließend kann die Shell geschlossen werden.
+   
+### 2.Voreinstellungen
 
-### 2. Backend
+1. Gehe auf den Reiter **IAM und Verwaltung** auf **IAM** in der Google Cloud Console
+2. Drücke **Zugriff gewähren** mit dem Namen backend@<Projekt_ID>.iam.gserviceaccount.com und den Rollen Cloud-SQL-Client und Zugriffsperson für Secret Manager-Secret.
+3. Drücke erneut **Zugriff gewähren** mit dem Namen frontend@<Projekt_ID>.iam.gserviceaccount.com und füge keine Rollen hinzu.
+4. Gehe links auf den Reiter **Sicherheit** auf **Secret Manager** und erstelle ein Secret mit dem Passwort des Nutzerkontos von der Datenbank als Secret-Wert
 
-1. Navigiere zum Backend-Verzeichnis in deiner Entwicklungsumgebung:
-    ```bash
-    cd IssueBoardBackend
-    ```
-3. Stelle sicher, dass du das Projekt mit Maven eingerichtet hast, du kannst dafür die pom.xml nutzen.
-4. Anschließend den Befehl in die Konsole eingeben:
+### 3. Backend
+
+1. Stelle sicher, dass du das Projekt mit Maven eingerichtet hast, du kannst dafür die pom.xml nutzen.
+2. Anschließend den Befehl in die Konsole deiner Entwicklungsumgebung eingeben:
    ```bash
     mvn clean package -DskipTests
     ```
-
-6. Stelle sicher, dass die Umgebungsvariablen für deine Google Cloud SQL-Verbindung korrekt konfiguriert sind, einschließlich des `GOOGLE_APPLICATION_CREDENTIALS` Pfades zum Service Account-Schlüssel.
-
-7. Deploye das Backend zu Google Cloud Run.
-
-### 3. Frontend
-
-1. Navigiere zum Frontend-Verzeichnis:
+3. Navigiere zum Backend-Verzeichnis:
     ```bash
+    cd IssueBoardBackend
+    ```
+4. Konto wechseln:
+   ```bash
+    gcloud config set account backend@<Projekt_ID>.iam.gserviceaccount.com
+    ```
+5. Führe den Befehl aus:
+   ```bash
+    gcloud builds submit --tag gcr.io/<Projekt_ID>/backend
+    ```
+6. Deploye das Backend zu Google Cloud Run:
+   ```bash
+    gcloud run deploy backend                                        
+   --image gcr.io/<Projekt_ID>/backend 
+   --platform managed   
+   --region <region, z.B. europe-west1>
+   --allow-unauthenticated 
+   --add-cloudsql-instances <cloudsql-instance> 
+   --set-env-vars DB_USERNAME=<username> 
+   --set-env-vars DB_PASSWORD=$(gcloud secrets versions access latest --secret=<secret-name>) 
+   --set-env-vars INSTANCE_CONNECTION_NAME=<instance connection name>
+   --set-env-vars DATABASE_NAME=issue_board
+    ```
+7. Gehe nun zu Google Cloud Console, dort solltest du unter dem Reiter **Cloud Run** deine backend Instanz sehen, klicke darauf und kopiere die URL.
+
+### 4. Frontend
+
+1. Gehe in deiner Entwicklungsordner auf die cib.js im Ordner */IssueBoardWebServer/src/main/resources/static/js*
+2. Suche in dem Code mit STRG+F nach "const BackendURL", ersetze rechts den String mit deiner kopierten Backend-URL
+3. Anschließend den Befehl in die Konsole deiner Entwicklungsumgebung eingeben:
+   ```bash
+    mvn clean package -DskipTests
+    ```
+4. Navigiere zum Frontend-Verzeichnis:
+    ```bash
+    ls
     cd frontend
     ```
-2. Installiere die Abhängigkeiten:
-    ```bash
-    npm install
+5. Konto wechseln:
+   ```bash
+    gcloud config set account frontend@<Projekt_ID>.iam.gserviceaccount.com
     ```
-3. Starte das Frontend lokal:
-    ```bash
-    npm start
+6. Führe den Befehl aus:
+   ```bash
+    gcloud builds submit --tag gcr.io/<Projekt_ID>/frontend
     ```
-
-4. Deploye das Frontend zu Google Cloud Run.
-
-## Konfiguration
-
-1. **Backend-Konfiguration**: Die Verbindung zur Cloud SQL-Datenbank erfolgt über Umgebungsvariablen. Stelle sicher, dass du den Service Account-Schlüssel in der Umgebungsvariable `GOOGLE_APPLICATION_CREDENTIALS` angibst.
-   
-2. **Frontend-Konfiguration**: Stelle sicher, dass die API-URL des Backends in den Frontend-Einstellungen konfiguriert ist.
+7. Deploye das Frontend zu Google Cloud Run.
+   ```bash
+    gcloud run deploy frontend 
+    --image gcr.io/<Projekt_ID>/frontend 
+    --platform managed 
+    --region <region, z.B. europe-west1> 
+    --allow-unauthenticated 
+    ```
+8. Gehe nun zu Google Cloud Console, dort solltest du unter dem Reiter **Cloud Run** deine frontend Instanz sehen, klicke darauf und gehe auf die URL, füge der URL am ende **/cib.html** hinzu um auf die Seite zu gelangen.
 
 ## Sicherheit
 
@@ -98,9 +131,5 @@ Klone als erstes das Repository
 
 ## Weitere Hinweise
 
-- Um den Dienst in einer Produktionsumgebung zu betreiben, stelle sicher, dass alle Umgebungsvariablen korrekt gesetzt sind und die Dienste in Google Cloud richtig konfiguriert sind (z. B. Cloud Run, Cloud SQL, VPC).
+- Um den Dienst in einer Produktionsumgebung zu betreiben, stelle sicher, dass alle Umgebungsvariablen korrekt gesetzt sind und die Dienste in Google Cloud richtig konfiguriert sind (z. B. Cloud Run, Cloud SQL).
 - Alle sensiblen Daten (wie Service Account-Schlüssel) sollten sicher gespeichert und niemals im Repository eingecheckt werden.
-
-## Lizenz
-
-Dieses Projekt ist unter der MIT-Lizenz lizenziert. Weitere Details findest du in der [LICENSE](LICENSE)-Datei.
