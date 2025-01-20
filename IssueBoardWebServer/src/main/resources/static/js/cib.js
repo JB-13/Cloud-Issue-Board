@@ -455,22 +455,12 @@ async function benutzerRegistrieren() {
 		if (!antwort.ok) {
 			throw new Error("Fehler: " + antwort.status + " " + ergebnis.message);
 		}
-		// Erfolgreiche Anmeldung verarbeiten
-		aktiveBenutzerID = ergebnis.id;
-		aktiverBenutzerbenutzername = ergebnis.username;
-		aktiverZugriffsToken = ergebnis.credential.zugriffsToken;
-		document.getElementById("anmdelungsname").textContent = "Angemeldet als:" + aktiverBenutzerbenutzername;
-		modal.style.display = "none";
+
+
 		eingabefelderLeeren();
 		benutzeroberflaecheAktualisieren();
 		alert("Erfolgreich registriert als " + ergebnis.username);
-		document.getElementById('boardId').style.display = "flex";
-		document.querySelector('.create-issue-button').style.display = "block";
-		document.getElementById('aktualisereIssues').style.display = "block";
-
-		modalOefnenKnopf.textContent = 'Abmelden';
-		modalOefnenKnopf.removeEventListener('click', benutzerAnmelden);
-		modalOefnenKnopf.addEventListener('click', abmelden);
+		modal.style.display = "none";
 		console.log(ergebnis);
 
 	} catch (fehler) {
