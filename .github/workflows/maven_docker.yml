@@ -32,7 +32,26 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean install -DskipTests
-          
+
+      - name: Verfiy Build Output
+        run: |
+          echo "Checking backend artifacts"
+          ls -l IssueBoardBackend/target/
+          echo "Checking frontend artifacts"
+          ls -l IssueBoardWebServer/target/
+        
+      - name: Upload Backend Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-app
+          path: IssueBoardBackend/target/*.jar
+
+      - name: Upload Frontend Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-app
+          path: IssueBoardWebServer/target/*.jar
+
       - name: Start Compose
         run: docker compose up --build -d
 
