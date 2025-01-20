@@ -237,7 +237,7 @@ async function benutzerAnmelden() {
 
 	try {
 		// API-Anfrage an den Server
-		const antwort = await fetch("${BackendURL}/access", {
+		const antwort = await fetch(`${BackendURL}/access`, {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
@@ -299,7 +299,7 @@ async function abmelden() {
 	fehlerMeldungLeeren();
 	modal.style.display = "none";
 	try {
-		const antwort = await fetch("${BackendURL}/access", {
+		const antwort = await fetch(`${BackendURL}/access`, {
 			method: 'DELETE',
 			headers: {
 				'Accept': 'application/json',
@@ -372,7 +372,7 @@ async function benutzerRegistrieren() {
 
 	try {
 		// API-Anfrage an den Server
-		const antwort = await fetch("${BackendURL}/user", {
+		const antwort = await fetch(`${BackendURL}/user`, {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
@@ -428,7 +428,7 @@ async function benutzerRegistrieren() {
 async function ladeVerfuegbareIssues() {
 	try {
 		console.log('Lade verfügbare Issues');
-		const response = await fetch('${BackendURL}/user/issue', {
+		const response = await fetch(`${BackendURL}/user/issue`, {
 			method: 'GET',
 			headers: {
 				'accessToken': aktiverZugriffsToken
@@ -484,7 +484,7 @@ async function ladeVerfuegbareIssues() {
 async function ladeVerfuegbareEnwtickler() {
     try {
 		console.log('Lade verfügbare Enwtickler');
-		const response = await fetch('${BackendURL}/user', {
+		const response = await fetch(`${BackendURL}/user`, {
 			method: 'GET',
 			headers: {
 				'accessToken': aktiverZugriffsToken
@@ -514,7 +514,7 @@ async function ladeVerfuegbareEnwtickler() {
 async function ladeVerfuegbareBenutzer() {
 	try {
 		console.log('Lade verfügbare Benutzer');
-		const response = await fetch('${BackendURL}/user', {
+		const response = await fetch(`${BackendURL}/user`, {
 			method: 'GET',
 			headers: {
 				'accessToken': aktiverZugriffsToken
