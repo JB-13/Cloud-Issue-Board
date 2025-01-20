@@ -32,7 +32,13 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean install -DskipTests
-          
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: java-app
+          path: target/*.jar
+
       - name: Start Compose
         run: docker compose up --build -d
 
@@ -40,7 +46,7 @@ jobs:
         run: |
           sleep 30 
           curl -f http://localhost:8080/cib.html || (echo "Frontend failed to start" && exit 1)
-          # curl -f http://localhost:8081/health || (echo "Backend failed to start" && exit 1)
+          curl -f http://localhost:8080/health || (echo "Backend failed to start" && exit 1)
 
       - name: Stop Compose
         run: docker compose down
