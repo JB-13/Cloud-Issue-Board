@@ -64,7 +64,7 @@ Klone als erstes das Repository
 1. Stelle sicher, dass du das Projekt mit Maven eingerichtet hast, du kannst dafür die pom.xml nutzen.
 2. Anschließend den Befehl in die Konsole deiner Entwicklungsumgebung eingeben:
    ```bash
-    mvn clean package -DskipTests
+    mvn clean install -DskipTests
     ```
 3. Navigiere zum Backend-Verzeichnis:
     ```bash
@@ -99,7 +99,7 @@ Klone als erstes das Repository
 2. Suche in dem Code mit STRG+F nach "const BackendURL", ersetze rechts den String mit deiner kopierten Backend-URL
 3. Anschließend den Befehl in die Konsole deiner Entwicklungsumgebung eingeben:
    ```bash
-    mvn clean package -DskipTests
+    mvn clean install -DskipTests
     ```
 4. Navigiere zum Frontend-Verzeichnis:
     ```bash
