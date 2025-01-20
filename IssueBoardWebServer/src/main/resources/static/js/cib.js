@@ -342,6 +342,8 @@ async function benutzerAnmelden() {
 		document.getElementById('boardId').style.display = "flex";
 		document.querySelector('.create-issue-button').style.display = "block";
 		document.getElementById('aktualisereIssues').style.display = "block";
+		ladeVerfuegbareIssues();
+		ladeVerfuegbareEnwtickler();
 		setTimeout(checkAdmin, 200);
 
 	} catch (fehler) {
