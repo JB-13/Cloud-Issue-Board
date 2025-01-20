@@ -112,6 +112,39 @@
 		<button id="confirm-issue">Bestätigen</button>
 		<button id="cancel-issue">Zurück</button>
 	</div>
+	
+	
+<div class="edit-issue-container" id="edit-issue-container"  style="display: none;">
+    <h2>Issue bearbeiten</h2>
+
+    <label for="edit-title">Titel</label>
+    <input type="text" id="edit-title" placeholder="Title" />
+
+    <label for="edit-description">Beschreibung</label>
+    <textarea id="edit-description" placeholder="Beschreibung"></textarea>
+
+    <label for="edit-assignee">Bearbeiter</label>
+    <select id="edit-assignee">
+        <option value="" disabled selected>Bearbeiter auswählen</option>
+        <!-- Dynamische Optionen für Entwickler -->
+    </select>
+
+    <label for="edit-column">Status</label>
+    <select id="edit-column">
+        <option value="open">Offen</option>
+        <option value="inprogress">In Bearbeitung</option>
+        <option value="closed">Geschlossen</option>
+    </select>
+
+    <div class="button-container">
+        <button id="save-issue" class="btn btn-primary">Speichern</button>
+        <button id="cancel-edit" class="btn btn-secondary">Zurück</button>
+        <button id="delete-issue" class="btn btn-danger">Löschen</button>
+    </div>
+</div>
+	
+	
+	
 
 
 	<div id="adminView" style="display: none;">
