@@ -51,6 +51,7 @@ window.onload = function() {
 	initializeCreateIssueForm();
 	initializeAdminView();
 
+
 };
 
 // Globale Variablen für die Benutzersitzung
@@ -160,7 +161,7 @@ function initializeAdminView() {
 	//Listener für bestätigen
 	confirmAdmin.addEventListener('click', (e) => {
 		document.getElementById('boardId').style.display = "flex";
-		issueForm = document.getElementById('issue-form').style.display = "block";
+		document.getElementById('issue-form').style.display = "none";
 		document.querySelector('.create-issue-button').style.display = "block";
 		document.getElementById('aktualisereIssues').style.display = "block";
 		document.getElementById("edit-issue-container").style.display = "none";
@@ -176,6 +177,7 @@ function initializeAdminView() {
 	//Listener für Abbrechen
 	cancelAdmin.addEventListener('click', (e) => {
 		document.getElementById('boardId').style.display = "flex";
+		document.getElementById('issue-form').style.display = "none";
 		document.querySelector('.create-issue-button').style.display = "block";
 		document.getElementById('aktualisereIssues').style.display = "block";
 		document.getElementById("edit-issue-container").style.display = "none";
@@ -200,11 +202,11 @@ function initializeEditIssueForm() {
 	//Listener für bestätigen
 	confirmEditButton.addEventListener('click', (e) => {
 		document.getElementById('boardId').style.display = "flex";
-		document.getElementById('issue-form').style.display = "block";
+		document.getElementById('issue-form').style.display = "none";
+		document.querySelector('.create-issue-button').style.display = "block";
 		document.getElementById('aktualisereIssues').style.display = "block";
 		document.getElementById("adminView").style.display = "none";
-		editIssueContainer.style.display = "block";
-		//API PUT
+		editIssueContainer.style.display = "none";
 		updateIssue();
 		setTimeout(ladeVerfuegbareIssues, 200);
 
@@ -217,7 +219,7 @@ function initializeEditIssueForm() {
 		document.querySelector('.create-issue-button').style.display = "block";
 		document.getElementById('aktualisereIssues').style.display = "block";
 		document.getElementById("adminView").style.display = "none";
-		editIssueContainer.style.display = "block";
+		editIssueContainer.style.display = "none";
 		setTimeout(ladeVerfuegbareIssues, 200);
 	});
 
@@ -228,8 +230,8 @@ function initializeEditIssueForm() {
 		document.querySelector('.create-issue-button').style.display = "block";
 		document.getElementById('aktualisereIssues').style.display = "block";
 		document.getElementById("adminView").style.display = "none";
-		editIssueContainer.style.display = "block";
-		//API Delete
+		editIssueContainer.style.display = "none";
+		deleteIssue();
 
 		setTimeout(ladeVerfuegbareIssues, 200);
 	});
@@ -338,7 +340,6 @@ async function benutzerAnmelden() {
 
 		console.log("Ergebnis: ", ergebnis);
 		document.getElementById('boardId').style.display = "flex";
-		document.querySelector('.add-spalte').style.display = "block";
 		document.querySelector('.create-issue-button').style.display = "block";
 		document.getElementById('aktualisereIssues').style.display = "block";
 		setTimeout(checkAdmin, 200);
@@ -389,10 +390,11 @@ async function abmelden() {
 		benutzeroberflaecheAktualisieren();
 		//default view
 		document.getElementById('boardId').style.display = "none";
-		document.querySelector('.add-spalte').style.display = "none";
 		document.querySelector('.create-issue-button').style.display = "none";
 		document.getElementById('aktualisereIssues').style.display = "none";
 		document.getElementById("adminView").style.display = "none";
+		document.getElementById("edit-issue-container").style.display = "none";
+		document.getElementById('issue-form').style.display = "none";;
 
 
 		modalOefnenKnopf.textContent = 'Anmelden';
@@ -462,9 +464,7 @@ async function benutzerRegistrieren() {
 		eingabefelderLeeren();
 		benutzeroberflaecheAktualisieren();
 		alert("Erfolgreich registriert als " + ergebnis.username);
-
 		document.getElementById('boardId').style.display = "flex";
-		document.querySelector('.add-spalte').style.display = "block";
 		document.querySelector('.create-issue-button').style.display = "block";
 		document.getElementById('aktualisereIssues').style.display = "block";
 
@@ -518,51 +518,59 @@ async function ladeVerfuegbareIssues() {
 
 
 		issues.forEach(issue => {
-			if (!vorhandeneIssues.has(issue.id)) {
-				// Neues Issue erstellen
-				if (!issue.status || typeof issue.status !== "string") {
-					issue.status = "open"; // Standardwert
-				}
-
-				issue.status = issue.status.trim().toLowerCase();//standardtisieren
-				const issueElement = document.createElement('div');
-				issueElement.className = 'issue'; // Klasse für Styling
-				issueElement.innerHTML = `
-                    <h4 class="issue-title">${issue.titel}</h4>
-                    <p>${issue.description}</p>
-                `;
-
-				// Issue in die richtige Spalte einfügen
-				spalten[issue.status] = spalten[issue.status] || spalten["open"]; // Standard-Spalte
-				spalten[issue.status].appendChild(issueElement);
-				vorhandeneIssues.add(issue.id);
-
-				issueElement.onclick = () => {
-					// Ins Bearbeitungsfenster navigieren
-					document.getElementById("edit-issue-container").style.display = "block";
-					document.getElementById('boardId').style.display = "none";
-					document.getElementById('issue-form').style.display = "none";
-					document.querySelector('.create-issue-button').style.display = "none";
-					document.getElementById('aktualisereIssues').style.display = "none";
-					document.getElementById("adminView").style.display = "none";
-					letzteIssueId = issue.id;
-
-					//setzen der Elemente
-
-					titelEdit = document.getElementById("edit-title").value = issue.titel;
-					descriptionEdit = document.getElementById("edit-description").value = issue.description;
-					assigneeEdit = document.getElementById("edit-assignee");
-					statusEdit = document.getElementById("edit-column");
-
-
-					if (assigneeEdit) {
-						const assignedTo = issue.assignedTo || ""; // Standardwert, falls null
-						assigneeEdit.value = assignedTo;
-					}
-					const statusEditValue = issue.status || "open"; // Standardwert
-					statusEdit.value = statusEditValue;
-				};
+			// Status normalisieren und prüfen
+			if (!issue.status || typeof issue.status !== "string") {
+				issue.status = "open"; // Standardwert
 			}
+			issue.status = issue.status.trim().toLowerCase(); // Standardisieren
+
+			// Falls das Issue bereits existiert, aus der aktuellen Spalte entfernen
+			if (vorhandeneIssues.has(issue.id)) {
+				const bestehendesIssueElement = document.querySelector(`[data-issue-id="${issue.id}"]`);
+				if (bestehendesIssueElement) {
+					bestehendesIssueElement.remove(); // Entferne altes DOM-Element
+				}
+			} else {
+				vorhandeneIssues.add(issue.id); // Neue Issue-ID hinzufügen
+			}
+
+			// Neues Issue-Element erstellen
+			const issueElement = document.createElement('div');
+			issueElement.className = 'issue'; // Klasse für Styling
+			issueElement.setAttribute('data-issue-id', issue.id); // Issue-ID im DOM-Attribut speichern
+			issueElement.innerHTML = `
+        <h4 class="issue-title">${issue.titel}</h4>
+        <p>${issue.description}</p>
+    `;
+
+			// Issue in die richtige Spalte einfügen
+			const zielSpalte = spalten[issue.status] || spalten["open"]; // Standard-Spalte
+			zielSpalte.appendChild(issueElement);
+
+			// Event-Listener für das Bearbeitungsfenster hinzufügen
+			issueElement.onclick = () => {
+				// Ins Bearbeitungsfenster navigieren
+				document.getElementById("edit-issue-container").style.display = "block";
+				document.getElementById('boardId').style.display = "none";
+				document.getElementById('issue-form').style.display = "none";
+				document.querySelector('.create-issue-button').style.display = "none";
+				document.getElementById('aktualisereIssues').style.display = "none";
+				document.getElementById("adminView").style.display = "none";
+				letzteIssueId = issue.id;
+
+				// Setzen der Elemente
+				titelEdit = document.getElementById("edit-title").value = issue.titel;
+				descriptionEdit = document.getElementById("edit-description").value = issue.description;
+				assigneeEdit = document.getElementById("edit-assignee");
+				statusEdit = document.getElementById("edit-column");
+
+				if (assigneeEdit) {
+					const assignedTo = issue.assignedTo || ""; // Standardwert, falls null
+					assigneeEdit.value = assignedTo;
+				}
+				const statusEditValue = issue.status || "open"; // Standardwert
+				statusEdit.value = statusEditValue;
+			};
 		});
 
 
@@ -692,13 +700,7 @@ async function ladeVerfuegbareBenutzer() {
 
 
 
-
-
-
-
-
 async function issueErstellen() {
-
 
 	// Benutzereingaben auslesen
 	titel = document.getElementById('issue-title').value;
@@ -786,7 +788,36 @@ async function updateUser() {
 
 	}
 
+}
 
+
+async function deleteIssue() {
+
+	try {
+		const antwort = await fetch(`http://localhost:8081/user/${aktiveBenutzerID}/issue/${letzteIssueId}`, {
+			method: 'DELETE',
+			headers: {
+				'Accept': 'application/json',
+				credentials: "include",
+				'accessToken': aktiverZugriffsToken
+			}
+
+		});
+
+		if (!antwort.ok) {
+			throw new Error("Fehler: " + antwort.status);
+		}
+
+		const issueElement = document.querySelector(`[data-issue-id="${letzteIssueId}"]`);
+		if (issueElement) {
+			issueElement.remove();
+			console.log(`Issue mit ID ${letzteIssueId} aus dem Frontend entfernt.`);
+		}
+
+	} catch (fehler) {
+		console.error("Fehler:", fehler.message);
+		fehlerAnzeigen(fehler.message, "anmeldeFehler");
+	}
 }
 
 // ***************************************************API-Ende****************************************************************
