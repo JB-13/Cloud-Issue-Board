@@ -54,9 +54,9 @@ Klone als erstes das Repository
    
 ### 2.Voreinstellungen
 
-1. Gehe auf den Reiter **IAM und Verwaltung** auf **IAM** in der Google Cloud Console
-2. Drücke **Zugriff gewähren** mit dem Namen backend@<Projekt_ID>.iam.gserviceaccount.com und den Rollen Cloud-SQL-Client und Zugriffsperson für Secret Manager-Secret.
-3. Drücke erneut **Zugriff gewähren** mit dem Namen frontend@<Projekt_ID>.iam.gserviceaccount.com und füge keine Rollen hinzu.
+1. Gehe auf den Reiter **IAM und Verwaltung** auf **Dienstkonten** in der Google Cloud Console
+2. Drücke **Dienstkonto erstellen** mit dem Namen backend@<Projekt_ID>.iam.gserviceaccount.com und den Rollen Cloud-SQL-Client und Zugriffsperson für Secret Manager-Secret.
+3. Drücke erneut **Dienstkonto erstellen** mit dem Namen frontend@<Projekt_ID>.iam.gserviceaccount.com und füge keine Rollen hinzu.
 4. Gehe links auf den Reiter **Sicherheit** auf **Secret Manager** und erstelle ein Secret mit dem Passwort des Nutzerkontos von der Datenbank als Secret-Wert
 
 ### 3. Backend
