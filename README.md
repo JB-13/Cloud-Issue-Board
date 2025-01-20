@@ -97,14 +97,14 @@ Klone als erstes das Repository
 
 1. Gehe in deiner Entwicklungsordner auf die cib.js im Ordner */IssueBoardWebServer/src/main/resources/static/js*
 2. Suche in dem Code mit STRG+F nach "const BackendURL", ersetze rechts den String mit deiner kopierten Backend-URL
-3. Anschließend den Befehl in die Konsole deiner Entwicklungsumgebung eingeben:
-   ```bash
-    mvn clean install -DskipTests
-    ```
-4. Navigiere zum Frontend-Verzeichnis:
+3. Navigiere zum Frontend-Verzeichnis:
     ```bash
     ls
     cd frontend
+    ```
+4. Anschließend den Befehl in die Konsole deiner Entwicklungsumgebung eingeben:
+   ```bash
+    mvn clean install -DskipTests
     ```
 5. Konto wechseln:
    ```bash
