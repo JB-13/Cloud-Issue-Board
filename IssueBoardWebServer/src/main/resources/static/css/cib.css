@@ -387,6 +387,75 @@ input::placeholder {
 	background-color: #005BB5;
 }
 
+
+.edit-issue-container {
+	display: flex;
+	flex-direction: column;
+	padding: 2rem;
+	background-color: white;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	max-width: 800px;
+	height: 100%;
+	margin: 2rem auto;
+}
+
+.edit-issue-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.edit-issue-container label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.edit-issue-container input,
+.edit-issue-container textarea,
+.edit-issue-container select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.button-container .btn {
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.button-container .btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.button-container .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.button-container .btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
 #adminView {
   display: none; /* Standardmäßig ausgeblendet */
   position: fixed; /* Zentral positionieren */
@@ -441,3 +510,5 @@ input::placeholder {
 #adminView button:last-child:hover {
   background-color: #5a6268; /* Dunkleres Grau beim Hover */
 }
+
+
