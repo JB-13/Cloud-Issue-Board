@@ -18,7 +18,7 @@ Ein Cloud-basiertes **Issue Board**, welches Benutzern ermöglicht, sich zu regi
 ## Cloud oder Lokal
 Unsere Anwendung kann entweder lokal oder auf einer Cloud deployed werden.
 Für die lokale Version benötigst du Docker Desktop, für die Cloud Version benötigst du die Google Cloud SDK.
-Wechsle bitte auf den "local" branch für die Installationsanleitung der lokalen Version.
+Wechsle bitte auf den "main" branch für die Installationsanleitung der Cloud Version.
 
 ## Installation Lokale-Version
 
