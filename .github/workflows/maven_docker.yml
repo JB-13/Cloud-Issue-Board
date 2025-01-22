@@ -36,6 +36,10 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
+      - name: Set Google Cloud project
+        run: |
+          gcloud config set project braided-facet-447714-a7
+
       - name: Verfiy Build Output
         run: |
           echo "Checking backend artifacts"
