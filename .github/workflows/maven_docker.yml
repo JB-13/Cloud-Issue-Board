@@ -71,7 +71,7 @@ jobs:
 
       - name: Deploy Backend to Google App Engine
         run: |
-          gcloud app deploy ./IssueBoardBackend/target/backend.jar
+          gcloud app deploy ./IssueBoardBackend/target/backend.jar --verbosity=debug
 
       - name: Deploy Frontend to Google App Engine
         run: |
