@@ -163,4 +163,4 @@ Klone als erstes das Repository
 ## Weitere Hinweise
 
 - Um den Dienst in einer Produktionsumgebung zu betreiben, stelle sicher, dass alle Umgebungsvariablen korrekt gesetzt sind und die Dienste in Google Cloud richtig konfiguriert sind (z. B. Cloud Run, Cloud SQL).
-- Alle sensiblen Daten (wie Service Account-Schlüssel) sollten sicher gespeichert und niemals im Repository eingecheckt werden.
+- Alle sensiblen Daten sollten sicher gespeichert und niemals im Repository eingecheckt werden.
