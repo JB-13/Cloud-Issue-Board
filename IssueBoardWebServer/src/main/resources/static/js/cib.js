@@ -608,7 +608,7 @@ async function updateIssue() {
 
 	try {
 		console.log('Update das Issue');
-		const response = await fetch(`${BackendURL}user/${aktiveBenutzerID}/issue/${letzteIssueId}`, {
+		const response = await fetch(`${BackendURL}/user/${aktiveBenutzerID}/issue/${letzteIssueId}`, {
 			method: 'PUT',
 			headers: {
 				'Accept': 'application/json',
