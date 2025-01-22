@@ -18,7 +18,7 @@ Ein Cloud-basiertes **Issue Board**, welches Benutzern ermöglicht, sich zu regi
 
 #
 
-- **Issues anzeigen und bearbeiten**: Benutzer können bestehende Issues ansehen und bearbeiten.
+- **Issues anzeigen, erstellen und bearbeiten**: Benutzer können bestehende Issues ansehen und bearbeiten oder ein neues Issue erstellen.
 
 ![Image](https://github.com/user-attachments/assets/837c2d4b-fda2-406e-a656-d37c6820ef31)
 
