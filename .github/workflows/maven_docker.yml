@@ -36,10 +36,6 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Set Google Cloud project
-        run: |
-          gcloud config set project braided-facet-447714-a7
-
       - name: Verfiy Build Output
         run: |
           echo "Checking backend artifacts"
@@ -58,12 +54,34 @@ jobs:
         run: gcloud config set project ${{ secrets.GCP_PROJECT }}
 
 
-      - name: Deploy Backend to Google App Engine
-        run: gcloud app deploy IssueBoardBackend/target/backend.jar --version=${{ github.run_number }} --quiet
+      - name: Build and Push Backend Docker Image
+        run: |
+            docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/backend:${{ github.run_number }} IssueBoardBackend/.
+            docker push gcr.io/${{ secrets.GCP_PROJECT }}/backend:${{ github.run_number }}
 
 
-      - name: Deploy Frontend to Google App Engine
-        run: gcloud app deploy IssueBoardWebServer/target/frontend.jar --version=${{ github.run_number }} --quiet
+      - name: Build and Push Frontend Docker Image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/frontend:${{ github.run_number }} IssueBoardWebServer/.
+          docker push gcr.io/${{ secrets.GCP_PROJECT }}/frontend:${{ github.run_number }}
+
+
+      - name: Deploy Backend to Google Cloud Run
+        run: |
+          gcloud run deploy backend \
+            --image gcr.io/${{ secrets.GCP_PROJECT }}/backend:${{ github.run_number }} \
+            --platform managed \
+            --region europe-west1 \
+            --allow-unauthenticated
+
+
+      - name: Deploy Frontend to Google Cloud Run
+        run: |
+          gcloud run deploy frontend \
+            --image gcr.io/${{ secrets.GCP_PROJECT }}/frontend:${{ github.run_number }} \
+            --platform managed \
+            --region europe-west1 \
+            --allow-unauthenticated
 
 
       - name: Start Compose
@@ -71,7 +89,7 @@ jobs:
 
       - name: Health check
         run: |
-          sleep 30 
+          sleep 15 
           curl -f http://localhost:8080/cib.html || (echo "Frontend failed to start" && exit 1)
           # curl -f http://localhost:8081/health || (echo "Backend failed to start" && exit 1)
 
