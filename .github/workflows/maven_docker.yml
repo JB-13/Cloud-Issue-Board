@@ -39,18 +39,25 @@ jobs:
           ls -l IssueBoardBackend/target/
           echo "Checking frontend artifacts"
           ls -l IssueBoardWebServer/target/
-        
-      - name: Upload Backend Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: backend-app
-          path: IssueBoardBackend/target/*.jar
+          
 
-      - name: Upload Frontend Artifacts
-        uses: actions/upload-artifact@v3
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         with:
-          name: frontend-app
-          path: IssueBoardWebServer/target/*.jar
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          
+
+      - name: Set Google Cloud Project
+        run: gcloud config set project ${{ secrets.GCP_PROJECT }}
+
+
+      - name: Deploy Backend to Google App Engine
+        run: gcloud app deploy IssueBoardBackend/target/backend.jar --quiet
+
+
+      - name: Deploy Frontend to Google App Engine
+        run: gcloud app deploy IssueBoardWebServer/target/frontend.jar --quiet
+
 
       - name: Start Compose
         run: docker compose up --build -d
