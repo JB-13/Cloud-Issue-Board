@@ -55,13 +55,11 @@ jobs:
 
 
       - name: Deploy Backend to Google App Engine
-        run: gcloud app deploy IssueBoardBackend/target/backend.jar \
-             --version=${{ github.run_number }} --quiet
+        run: gcloud app deploy IssueBoardBackend/target/backend.jar --version=${{ github.run_number }} --quiet
 
 
       - name: Deploy Frontend to Google App Engine
-        run: gcloud app deploy IssueBoardWebServer/target/frontend.jar \
-             --version=${{ github.run_number }} --quiet
+        run: gcloud app deploy IssueBoardWebServer/target/frontend.jar --version=${{ github.run_number }} --quiet
 
 
       - name: Start Compose
