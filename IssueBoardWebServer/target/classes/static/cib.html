@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Issue Board</title>
+<link rel="stylesheet" href="css/cib.css">
+</head>
+<body>
+
+	<!-- Navigationsleiste -->                  <!--Test Änderung hier eingefügt #1-->
+	<div class="NavLeiste">
+		<div id="anmdelungsname" class="anmeldungsname"></div>
+		<div class="name">Cloud Issue Board</div>
+		<button class="KnopfAnmelden" id="adminViewButton"
+			style="display: none;">Admin-Sicht</button>
+		<button class="KnopfAnmelden" id="anmeldenKnopf">Anmelden</button>
+	</div>
+
+	<div id="modal" class="modal">
+		<!-- Modal Inhalt -->
+		<div class="anmelde-container">
+			<span class="modalSchliessenKnopf" id="modalSchliessen">&times;</span>
+			<div class="anmelde-box">
+				<h1>Cloud Issue Board</h1>
+				<div class="tabs">
+					<button id="anmeldeTab" class="tab-button active">Anmelden</button>
+					<button id="registrierungsTab" class="tab-button">Registrieren</button>
+				</div>
+				<!-- Anmeldeformular -->
+				<div id="benutzerAnmeldeFormular" class="anmelde-formular">
+					<h2>Anmeldung</h2>
+					<div id="anmeldeFehler" class="fehler-meldung"></div>
+
+					<div class="eingabe-gruppe">
+						<label for="eingabebenutzername">Benutzername</label> <input
+							type="text" id="eingabebenutzername" placeholder="benutzername"
+							autocomplete="benutzername">
+					</div>
+
+					<div class="eingabe-gruppe">
+						<label for="eingabePasswort">Passwort</label> <input
+							type="password" id="eingabePasswort" placeholder="••••••••"
+							autocomplete="current-password">
+					</div>
+
+					<button id="benutzerAnmeldeButton" class="anmelde-button">
+						Anmelden</button>
+				</div>
+				<!-- Registrierungsformular -->
+				<div id="benutzerRegistrierungsFormular" class="anmelde-formular"
+					style="display: none;">
+					<h2>Registrierung</h2>
+					<div id="registrierungsFehler" class="fehler-meldung"></div>
+
+					<div class="eingabe-gruppe">
+						<label for="eingabeRegistrierungsbenutzername">Benutzername</label>
+						<input type="text" id="eingabeRegistrierungsbenutzername"
+							placeholder="benutzername" autocomplete="name">
+					</div>
+
+					<div class="eingabe-gruppe">
+						<label for="eingabeRegistrierungsPasswort">Passwort</label> <input
+							type="password" id="eingabeRegistrierungsPasswort"
+							placeholder="••••••••" autocomplete="new-password">
+					</div>
+
+					<button id="benutzerRegistrierungsButton" class="anmelde-button">
+						Registrieren</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<button class="create-issue-button" style="display: none;">Issue erstellen</button>
+	<button class="create-issue-button" style="display: none;" id="aktualisereIssues">aktualisieren</button>
+	<!-- Issuea Board Conatiner -->
+	<div class="board" style="display: none;" id="boardId">
+
+
+		<!-- Dummy Spalte 1 -->
+		<div class="spalte" draggable="false" id="spalteOffen">
+			<div class="spalte-header">Offen</div>
+			
+		</div>
+		<!-- Dummy Spalte 2 -->
+		<div class="spalte" draggable="false" id="spalteInBearbeitung">
+			<div class="spalte-header">In
+				Bearbeitung</div>
+			
+		</div>
+		<!-- Dummy Spalte 3 -->
+		<div class="spalte" draggable="false" id="spalteGeschlossen">
+			<div class="spalte-header">Geschlossen</div>
+			
+		</div>
+	</div>
+
+
+
+	<!-- Issues erstellen -->
+	<div class="issue-form hidden" style="display: none;" id="issue-form">
+		<h2>Create Issue</h2>
+		<!-- Beschreibung -->
+		<input type="text" placeholder="Title" id="issue-title">
+		<textarea placeholder="Beschreibung" id="issue-description" rows="15"></textarea>
+		<!-- Dropdown mit Personen -->
+		<select id="issue-assignee">
+			<option value="">Zuweisen an.</option>
+		</select>
+		<button id="confirm-issue">Bestätigen</button>
+		<button id="cancel-issue">Zurück</button>
+	</div>
+
+
+	<div id="adminView" style="display: none;">
+		<h3>Admin-Sicht</h3>
+		<label for="userDropdown">Benutzer:</label> 
+		<select id="userDropdown">
+			<!-- Benutzer werden dynamisch hinzugefügt -->
+		</select> 
+		<label for="permissionDropdown">Berechtigung:</label>
+		 <select id="permissionDropdown">
+			<option value="Zuschauer">Zuschauer</option>
+			<option value="Mitarbeiter">Mitarbeiter</option>
+			<option value="Admin">Admin</option>
+		</select>
+
+		<button class="add-spalte" id="confirmButton">Bestätigen</button>
+		<button class="add-spalte" id="cancelButton">Abbrechen</button>
+	</div>
+
+
+
+
+	<!-- Fußzeile -->
+	<div class="Fusszeile"></div>
+
+	<script src="js/cib.js"></script>
+
+
+</body>
+</html>

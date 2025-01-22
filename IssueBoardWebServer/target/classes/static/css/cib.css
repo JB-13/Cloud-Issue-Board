@@ -1,0 +1,443 @@
+/* Grundlegende Reset-Einstellungen */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navigationsleiste */
+.NavLeiste {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #4CAF50;
+	padding: 15px 40px;
+	height: 50px;
+}
+
+.NavLeiste .name {
+	font-size: 20px;
+	color: white;
+	font-weight: bold;
+	padding-left: 150px;
+}
+
+.NavLeiste .anmeldungsname {
+	font-size: 20px;
+	color: white;
+	padding-left: 50px;
+}
+
+.NavLeiste .KnopfAnmelden {
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	padding: 12px 40px;
+	border-radius: 5px;
+	cursor: pointer;
+	margin-right: 10px;
+	font-size: 16px;
+}
+
+.NavLeiste .KnopfAnmelden:hover {
+	background-color: #45a049;
+}
+
+/* Fußzeile */
+.Fusszeile {
+	position: fixed;
+	bottom: 0;
+	background-color: #f1f1f1;
+	padding: 15px;
+	text-align: center;
+	font-size: 14px;
+	width: 100%;
+	height: 3em;
+}
+
+.Fusszeile a {
+	text-decoration: none;
+}
+
+.Fusszeile a:hover {
+	text-decoration: underline;
+}
+
+/* Modal */
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
+	justify-content: center;
+	align-items: center;
+	top: 0;
+	left: 0;
+}
+
+/* Schließen Button immer sichtbar */
+.modalSchliessenKnopf {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 2;
+	background: white;
+	border-radius: 50%;
+	width: 30px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modalSchliessenKnopf:hover, .modalSchliessenKnopf:focus {
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+/* Responsives Design */
+@media ( max-width : 600px) {
+	.anmelde-container {
+		width: 90%;
+		padding: 15px;
+	}
+}
+
+/* Ab hier beginnt das Anmeldeformular*/
+
+/* Container für das Anmeldeformular */
+.anmelde-container {
+	width: 100%;
+	max-width: 400px;
+	position: relative; /* Für absolut positionierten Schließen-Button */
+}
+
+/* Box-Design für das Anmeldeformular */
+.anmelde-box {
+	background: white;
+	padding: 2rem;
+	border-radius: 10px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+	max-height: 80vh; /* Maximale Höhe relativ zum Viewport */
+	overflow-y: auto; /* Scrollbar wenn nötig */
+}
+
+/*Ab hier beginnt das Issue Board */
+
+/*Design für das gesamte Board */
+.board {
+	display: flex;
+	justify-content: space-between;
+	padding: 2rem;
+	gap: 1rem;
+}
+
+/*Design für die Spalten*/
+.spalte {
+	background-color: #fff;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	flex: 10;
+	display: flex;
+	flex-direction: column;
+	padding: 1rem;
+	position: relative;
+}
+/*Design für den Spalten Titel*/
+.spalte-header {
+	font-weight: bold;
+	font-size: 1.2rem;
+	margin-bottom: 1rem;
+	text-align: center;
+	border-bottom: 2px solid #0078D7;
+	padding-bottom: 0.5rem;
+	cursor: pointer;
+}
+
+/*Design für issue*/
+.issue {
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	margin-bottom: 1rem;
+	padding: 0.5rem;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	transition: transform 0.2s ease;
+	cursor: grab;
+}
+
+.issue:hover {
+	transform: scale(1.02);
+}
+
+.issue:active {
+	cursor: grabbing;
+}
+
+/*Design für Spalte hinzufügen Button*/
+.add-spalte, .create-issue-button {
+	background-color: #0078D7;
+	color: white;
+	border: none;
+	padding: 0.5rem 1rem;
+	border-radius: 5px;
+	cursor: pointer;
+	margin: 1rem auto;
+	display: block;
+}
+
+
+/* Überschriften-Stile */
+h1 {
+	color: #333;
+	font-size: 1.8rem;
+	margin-bottom: 1.5rem;
+	text-align: center;
+}
+
+h2 {
+	color: #555;
+	font-size: 1.4rem;
+	margin-bottom: 0.1rem;
+	text-align: center;
+}
+
+/* Formular-Layout */
+.anmelde-formular {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+/* Gruppierung von Label und Eingabefeld */
+.eingabe-gruppe {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+/* Beschriftungen für Eingabefelder */
+label {
+	color: #555;
+	font-size: 0.9rem;
+	font-weight: 500;
+}
+
+/* Stil für Eingabefelder */
+input {
+	padding: 0.8rem 1rem;
+	border: 2px solid #e1e1e1;
+	border-radius: 6px;
+	font-size: 1rem;
+	/* Sanfter Übergang bei Fokus */
+	transition: border-color 0.3s ease;
+}
+
+/* Fokus-Zustand für Eingabefelder */
+input:focus {
+	outline: none;
+	border-color: #007BFF;
+}
+
+/* Platzhaltertext in Eingabefeldern */
+input::placeholder {
+	color: #aaa;
+}
+
+/* Stil für den Anmelde-Button */
+.anmelde-button {
+	background-color: #007BFF;
+	color: white;
+	border: none;
+	padding: 0.8rem;
+	border-radius: 6px;
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	margin-top: 0.5rem;
+}
+
+/* Hover-Effekt für den Button */
+.anmelde-button:hover {
+	background-color: #0056b3;
+}
+
+/* Klick-Animation für den Button */
+.anmelde-button:active {
+	transform: translateY(1px);
+}
+
+/* Deaktivierter Button-Zustand */
+.anmelde-button:disabled {
+	background-color: #cccccc;
+	cursor: not-allowed;
+}
+
+/* Stil für Fehlermeldungen */
+.fehler-meldung {
+	color: #dc3545;
+	font-size: 0.9rem;
+	text-align: center;
+	min-height: 20px;
+	padding: 0.2rem;
+	/* Leicht sanfte Einblendung von Fehlermeldung */
+	transition: opacity 0.3s ease;
+}
+
+/* Responsive Anpassungen für kleine Bildschirme mit <400px */
+@media ( max-width : 480px) {
+	.anmelde-box {
+		padding: 1.5rem;
+	}
+	h1 {
+		font-size: 1.5rem;
+	}
+	h2 {
+		font-size: 1.2rem;
+	}
+}
+/* Tab Container Styling */
+.tabs {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 2rem;
+	border-bottom: 2px solid #eee;
+}
+
+/* Tab Button Styling */
+.tab-button {
+	padding: 0.8rem 2rem;
+	background: none;
+	border: none;
+	font-size: 1rem;
+	cursor: pointer;
+	position: relative;
+	color: #666;
+}
+
+/* Aktiver Tab */
+.tab-button.active {
+	color: #007BFF;
+	font-weight: bold;
+}
+
+/* Unterline-Effekt für aktiven Tab */
+.tab-button.active::after {
+	content: '';
+	position: absolute;
+	bottom: -2px;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background: #007BFF;
+}
+
+.center {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	padding: 10px;
+}
+
+
+
+/*Erstellung des neuen Issues Dialog  */
+
+/*Form  */
+.issue-form {
+	display: flex;
+	flex-direction: column;
+	padding: 2rem;
+	background-color: white;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	max-width: 800px;
+	height: 100%;
+	margin: 2rem auto;
+}
+/*Eingabefelder */
+.issue-form input, .issue-form textarea, .issue-form select {
+	margin-bottom: 1rem;
+	padding: 0.5rem;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	width: 100%;
+}
+/*Bestätigen und Zurück im issue Form */
+.issue-form button {
+	background-color: #0078D7;
+	color: white;
+	border: none;
+	padding: 0.5rem 1rem;
+	border-radius: 5px;
+	cursor: pointer;
+}
+/*hover für Bestätigen und Zurück */
+.issue-form button:hover {
+	background-color: #005BB5;
+}
+
+#adminView {
+  display: none; /* Standardmäßig ausgeblendet */
+  position: fixed; /* Zentral positionieren */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Zentrieren */
+  width: 400px; /* Feste Breite */
+  padding: 20px; /* Innenabstand */
+  border: 1px solid #ccc; /* Rahmen */
+  border-radius: 8px; /* Abgerundete Ecken */
+  background-color: #ffffff; /* Weißer Hintergrund */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Schatten für bessere Sichtbarkeit */
+  z-index: 1000; /* Immer über anderen Inhalten */
+}
+
+#adminView h3 {
+  text-align: center; /* Überschrift zentrieren */
+  margin-bottom: 20px;
+}
+
+#adminView label {
+  display: block; /* Block-Anzeige */
+  margin-bottom: 8px;
+}
+
+#adminView select {
+  width: 100%; /* Volle Breite */
+  margin-bottom: 15px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#adminView button {
+  width: 48%; /* Gleiche Breite für Buttons */
+  padding: 10px;
+  border: none;
+  background-color: #007bff; /* Blau */
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#adminView button:hover {
+  background-color: #0056b3; /* Dunkleres Blau beim Hover */
+}
+
+#adminView button:last-child {
+  background-color: #6c757d; /* Grau für den Abbrechen-Button */
+}
+
+#adminView button:last-child:hover {
+  background-color: #5a6268; /* Dunkleres Grau beim Hover */
+}
