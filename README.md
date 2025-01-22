@@ -24,6 +24,10 @@ Ein Cloud-basiertes **Issue Board**, welches Benutzern ermöglicht, sich zu regi
     <img src="https://github.com/user-attachments/assets/7ae19095-0ad1-42b7-bfcd-56e32ac660f5" alt="Image" width="600">
 </div>
 
+<div align="center">
+    <img src="https://github.com/user-attachments/assets/c3ab55ab-cb22-475f-8a80-3676120af22c" alt="Image" width="600">
+</div>
+
 - **Admin-Funktionen**: Administratoren können in der Admin-Sicht Nutzer verwalten, indem sie ihre Rollen ändern (Zuschauer, Mitarbeiter, Admin).
 
 <div align="center">
