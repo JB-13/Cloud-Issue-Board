@@ -1,0 +1,4 @@
+runtime: java21
+instance_class: F2
+env: flex
+entrypoint: java -jar target/frontend.jar
