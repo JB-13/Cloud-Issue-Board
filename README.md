@@ -11,8 +11,38 @@ Ein Cloud-basiertes **Issue Board**, welches Benutzern ermöglicht, sich zu regi
 ## Funktionen
 
 - **Benutzerregistrierung und Anmeldung**: Benutzer können sich registrieren, um ein Konto zu erstellen, und sich dann anmelden, um das Issue Board zu verwenden.
-- **Issues anzeigen und bearbeiten**: Benutzer können bestehende Issues ansehen und bearbeiten.
+
+  <div align="center">
+    <img src="https://github.com/user-attachments/assets/0ec00cc9-ac2f-4709-8502-0070c317dba8" alt="Image" width="400">
+</div>
+
+#
+
+- **Issues anzeigen, erstellen und bearbeiten**: Benutzer können bestehende Issues ansehen und bearbeiten oder ein neues Issue erstellen.
+
+![Image](https://github.com/user-attachments/assets/837c2d4b-fda2-406e-a656-d37c6820ef31)
+
+<br>
+<div align="center">
+    <img src="https://github.com/user-attachments/assets/7ae19095-0ad1-42b7-bfcd-56e32ac660f5" alt="Image" width="600">
+</div>
+
+<br>
+
+<div align="center">
+    <img src="https://github.com/user-attachments/assets/c3ab55ab-cb22-475f-8a80-3676120af22c" alt="Image" width="600">
+</div>
+
+#
+
 - **Admin-Funktionen**: Administratoren können in der Admin-Sicht Nutzer verwalten, indem sie ihre Rollen ändern (Zuschauer, Mitarbeiter, Admin).
+
+<div align="center">
+    <img src="https://github.com/user-attachments/assets/9cc0617f-f3e3-4fd1-a3ea-47a191ffbc31" alt="Image" width="400">
+</div>
+
+#
+
 - **Authentifizierung und Autorisierung**: Durch Login und Rollenmanagement wird die Nutzung des Boards je nach Benutzerrolle eingeschränkt.
 
 ## Cloud oder Lokal
