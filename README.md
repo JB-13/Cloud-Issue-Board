@@ -71,3 +71,7 @@ Führe den docker Befehl aus (achte darauf, dass Docker Desktop gestartet ist):
 ```
 
 Gehe auf die Internetadresse: localhost:8080/cib.html
+
+## Sicherheit
+
+- Authentifizierung und Autorisierung sind durch **JWT-Token** für den Login und die Verwaltung der Benutzerrollen implementiert.
